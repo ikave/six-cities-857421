@@ -1,14 +1,22 @@
 import TSVFileReader from '../file-reader/tsv-file-reader.js';
+import { createOffer } from '../helpers/offers.js';
 import { CLICommandInterface } from './cli-command.interface';
 
 export default class ImportCommand implements CLICommandInterface {
   public readonly name = '--import';
-  public execute(filename: string): void {
+
+  private onRow = (row: string) => {
+    const offer = createOffer(row);
+    console.log(offer);
+  };
+
+  public async execute(filename: string): Promise<void> {
     const fileReader = new TSVFileReader(filename.trim());
+    fileReader.on('row', this.onRow);
+    fileReader.on('end', () => console.log('Reading file complete'));
 
     try {
-      fileReader.read();
-      console.log(fileReader.toArray());
+      await fileReader.read();
     } catch (error) {
       if (!(error instanceof Error)) {
         throw error;

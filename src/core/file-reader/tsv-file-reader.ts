@@ -1,101 +1,35 @@
-import { readFileSync } from 'node:fs';
+import { createReadStream } from 'node:fs';
 import { FileReaderInterface } from './file-reader.interface';
-import { Offer } from '../../types/offer.type';
-import { HouseType } from '../../types/house-type.enum';
-import { City } from '../../types/city.type';
-import { Cities } from '../../types/cities.enum';
-import { Equipment } from '../../types/equipment.enum';
-import { User } from '../../types/user.type';
-import { UserType } from '../../types/user-type.enum';
-import { Coordinates } from '../../types/coordinates.type';
+import EventEmitter from 'node:events';
 
-export default class TSVFileReader implements FileReaderInterface {
-  private rawData = '';
-  constructor(public filename: string) {}
+const CHUNK_SIZE = 2 ** 4;
 
-  public read(): void {
-    this.rawData = readFileSync(this.filename, 'utf8');
+export default class TSVFileReader
+  extends EventEmitter
+  implements FileReaderInterface {
+  constructor(public filename: string) {
+    super();
   }
 
-  private getCity([cityName, latitude, longitude]: string[]): City {
-    return {
-      name: cityName as Cities,
-      coordinates: {
-        latitude: Number.parseFloat(latitude),
-        longitude: Number.parseFloat(longitude),
-      },
-    };
-  }
+  public async read(): Promise<void> {
+    const stream = createReadStream(this.filename, {
+      highWaterMark: CHUNK_SIZE,
+      encoding: 'utf8',
+    });
 
-  private getEquipment = (equipments: string[]): Equipment[] =>
-    equipments.map((equipment) => equipment as Equipment);
+    let remainingData = '';
+    let nextLinePosition = -1;
 
-  private getOwner = ([
-    name,
-    email,
-    avatar,
-    password,
-    type,
-  ]: string[]): User => ({
-    name,
-    email,
-    avatar,
-    password,
-    type: type as UserType,
-  });
+    for await (const chunk of stream) {
+      remainingData += chunk.toString();
 
-  private getCoordinates = ([latitude, longitude]: string[]): Coordinates => ({
-    latitude: Number.parseFloat(latitude),
-    longitude: Number.parseFloat(longitude),
-  });
+      while ((nextLinePosition = remainingData.indexOf('\n')) >= 0) {
+        const completeRow = remainingData.slice(0, nextLinePosition + 1);
+        remainingData = remainingData.slice(++nextLinePosition);
 
-  public toArray(): Offer[] {
-    if (!this.rawData) {
-      return [];
+        this.emit('row', completeRow);
+      }
     }
-
-    return this.rawData
-      .split('\n')
-      .filter((row) => row.trim() !== '')
-      .map((line) => line.split('\t'))
-      .map(
-        ([
-          title,
-          description,
-          date,
-          city,
-          preview,
-          pictures,
-          isPremium,
-          isFavorite,
-          raiting,
-          houseType,
-          rooms,
-          guests,
-          price,
-          equipment,
-          owner,
-          commentsCount,
-          coordinates,
-        ]) => ({
-          title,
-          description,
-          date: new Date(date),
-          city: this.getCity(city.split(';')),
-          preview,
-          pictures: pictures.split(';'),
-          isPremium: Boolean(isPremium),
-          isFavorite: Boolean(isFavorite),
-          raiting: Number.parseFloat(raiting),
-          houseType: houseType as HouseType,
-          rooms: Number.parseInt(rooms, 10),
-          guests: Number.parseInt(guests, 10),
-          price: Number.parseInt(price, 10),
-          equipment: this.getEquipment(equipment.split(';')),
-          owner: this.getOwner(owner.split(';')),
-          commentsCount: Number.parseInt(commentsCount, 10),
-          coordinates: this.getCoordinates(coordinates.split(';')),
-        })
-      );
+    this.emit('end');
   }
 }
