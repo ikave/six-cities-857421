@@ -32,5 +32,9 @@
   "engines": {
     "node": "^18.0.0",
     "npm": ">=8"
+  },
+  "dependencies": {
+    "dayjs": "^1.11.7",
+    "got": "^12.6.0"
   }
 }
