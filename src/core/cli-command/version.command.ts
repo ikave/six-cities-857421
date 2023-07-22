@@ -5,7 +5,7 @@ import { CLICommandInterface } from './cli-command.interface';
 export default class VersionCommand implements CLICommandInterface {
   public readonly name = '--version';
 
-  private readVersion(): string {
+  static readVersion(): string {
     const contentPageJSON = readFileSync(
       path.resolve('./package.json'),
       'utf8'
@@ -15,7 +15,7 @@ export default class VersionCommand implements CLICommandInterface {
   }
 
   public async execute(): Promise<void> {
-    const version = this.readVersion();
+    const version = VersionCommand.readVersion();
     console.log(version);
   }
 }

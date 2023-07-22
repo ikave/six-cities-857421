@@ -8,7 +8,7 @@ export default class CLIAplication {
   private commands: { [propertyName: string]: CLICommandInterface } = {};
   private defaultCommand = '--help';
 
-  private parseCommand(cliArguments: string[]): ParsedCommand {
+  static parseCommand(cliArguments: string[]): ParsedCommand {
     const parsedCommand: ParsedCommand = {};
     let command = '';
 
@@ -29,7 +29,7 @@ export default class CLIAplication {
   }
 
   public processCommand(argv: string[]): void {
-    const parsedCommand = this.parseCommand(argv);
+    const parsedCommand = CLIAplication.parseCommand(argv);
     const [commandName] = Object.keys(parsedCommand);
     const command = this.getCommand(commandName);
     const commandArguments = parsedCommand[commandName] || [];

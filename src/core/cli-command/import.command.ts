@@ -5,14 +5,14 @@ import { CLICommandInterface } from './cli-command.interface';
 export default class ImportCommand implements CLICommandInterface {
   public readonly name = '--import';
 
-  private onRow = (row: string) => {
+  static onRow = (row: string) => {
     const offer = createOffer(row);
     console.log(offer);
   };
 
   public async execute(filename: string): Promise<void> {
     const fileReader = new TSVFileReader(filename.trim());
-    fileReader.on('row', this.onRow);
+    fileReader.on('row', ImportCommand.onRow);
     fileReader.on('end', () => console.log('Reading file complete'));
 
     try {

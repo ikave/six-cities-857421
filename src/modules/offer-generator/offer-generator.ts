@@ -32,7 +32,7 @@ const PRICE_MAX = 100000;
 export class OfferGenerator implements OfferGeneratorInterface {
   constructor(private readonly mockData: MockData) {}
 
-  generate(): string {
+  public generate(): string {
     const title = getRandomItem<string>(this.mockData.title);
     const description = getRandomItem<string>(this.mockData.description);
     const date = dayjs()
