@@ -3,4 +3,6 @@ export enum AppComponent {
   LoggerInterface = 'LoggerInterface',
   ConfigInterface = 'ConfigInterface',
   DatabaseClientInterface = 'DatabaseClientInterface',
+  UserServiceInterface = 'UserServiceInterface',
+  UserModel = 'UserModel',
 }
