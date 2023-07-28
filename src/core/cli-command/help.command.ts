@@ -1,4 +1,4 @@
-import { CLICommandInterface } from './cli-command.interface';
+import { CLICommandInterface } from './cli-command.interface.js';
 
 export default class HelpCommand implements CLICommandInterface {
   public readonly name = '--help';

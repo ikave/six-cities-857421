@@ -6,12 +6,12 @@ import {
   getRandomNumber,
   transformCityObjectToString,
 } from '../../core/helpers/index.js';
-import { Coordinates } from '../../types/coordinates.type';
-import { Equipment } from '../../types/equipment.enum';
-import { HouseType } from '../../types/house-type.enum';
-import { MockData } from '../../types/mock-data.type';
-import { User } from '../../types/user.type';
-import { OfferGeneratorInterface } from './offer-generator.interface';
+import { Coordinates } from '../../types/coordinates.type.js';
+import { Equipment } from '../../types/equipment.enum.js';
+import { HouseType } from '../../types/house-type.enum.js';
+import { MockData } from '../../types/mock-data.type.js';
+import { User } from '../user/types/user.type.js';
+import { OfferGeneratorInterface } from './offer-generator.interface.js';
 import { City } from '../../types/city.type.js';
 
 const FIRST_WEEK_DAY = 1;
