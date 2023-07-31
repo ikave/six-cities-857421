@@ -1,9 +1,20 @@
-import { defaultClasses, getModelForClass, prop } from '@typegoose/typegoose';
+import {
+  defaultClasses,
+  getModelForClass,
+  modelOptions,
+  prop,
+} from '@typegoose/typegoose';
 import { User } from './types/user.type.js';
 import { createSHA256 } from '../../core/helpers/common.js';
+import { UserType } from './types/user-type.enum.js';
 
 export interface UserEntity extends defaultClasses.Base {}
 
+@modelOptions({
+  schemaOptions: {
+    collection: 'users',
+  },
+})
 export class UserEntity extends defaultClasses.TimeStamps implements User {
   @prop({
     type: String,
@@ -12,7 +23,7 @@ export class UserEntity extends defaultClasses.TimeStamps implements User {
     required: true,
     default: '',
   })
-  public name = '';
+  public name: string;
 
   @prop({
     type: String,
@@ -20,10 +31,10 @@ export class UserEntity extends defaultClasses.TimeStamps implements User {
     required: true,
     match: [/^([\w-\\.]+@([\w-]+\.)+[\w-]{2,4})?$/, 'Email is incorrect'],
   })
-  public email = '';
+  public email: string;
 
   @prop({ required: false, default: '' })
-  public avatar = '';
+  public avatar: string;
 
   @prop({
     type: String,
@@ -39,7 +50,7 @@ export class UserEntity extends defaultClasses.TimeStamps implements User {
     required: true,
     default: '',
   })
-  public type;
+  public type: UserType;
 
   constructor(userData: User) {
     super();
