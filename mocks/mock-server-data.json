@@ -55,7 +55,7 @@
       "http://pawof.bb/fa5.jpg",
       "http://pawof.bb/fa6.jpg"
     ],
-    "houseType": ["Apartment", "House", "Room", "Hotel"],
+    "houseType": ["apartment", "house", "room", "hotel"],
     "equipment": [
       "Breakfast",
       "Air conditioning",
@@ -70,28 +70,24 @@
         "name": "Ivan Padilla",
         "email": "ze@nubuhe.sn",
         "avatar": "http://vi.fo/gez.png",
-        "password": "3534063027",
         "type": "pro"
       },
       {
         "name": "Jason Ford",
         "email": "jo@sojup.cf",
         "avatar": "http://vi.fo/gez.png",
-        "password": "3534063027",
         "type": "default"
       },
       {
         "name": "Sean Fowler",
         "email": "ca@ke.cn",
         "avatar": "http://vi.fo/gez.png",
-        "password": "3534063027",
         "type": "pro"
       },
       {
         "name": "Lina Clark",
         "email": "tuihucib@wobo.ly",
         "avatar": "http://vi.fo/gez.png",
-        "password": "3534063027",
         "type": "default"
       }
     ],
