@@ -1,21 +1,17 @@
-import {
-  defaultClasses,
-  getModelForClass,
-  modelOptions,
-  prop,
-} from '@typegoose/typegoose';
-import { User } from './types/user.type.js';
-import { createSHA256 } from '../../core/helpers/common.js';
-import { UserType } from './types/user-type.enum.js';
+import { getModelForClass, modelOptions, prop } from '@typegoose/typegoose';
+import { Base, TimeStamps } from '@typegoose/typegoose/lib/defaultClasses.js';
+import { createSHA256 } from '~/core/helpers/index.js';
+import { User } from '../types/user.type.js';
+import { UserType } from '../types/user-type.enum.js';
 
-export interface UserEntity extends defaultClasses.Base {}
+export interface UserEntity extends Base {}
 
 @modelOptions({
   schemaOptions: {
     collection: 'users',
   },
 })
-export class UserEntity extends defaultClasses.TimeStamps implements User {
+export class UserEntity extends TimeStamps implements User {
   @prop({
     type: String,
     minLength: 1,
@@ -39,16 +35,13 @@ export class UserEntity extends defaultClasses.TimeStamps implements User {
   @prop({
     type: String,
     required: true,
-    minlength: 6,
-    maxLength: 12,
     default: '',
   })
   private password?: string;
 
   @prop({
-    type: String,
+    enum: () => UserType,
     required: true,
-    default: '',
   })
   public type: UserType;
 
