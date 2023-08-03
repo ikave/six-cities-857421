@@ -1,8 +1,8 @@
+import { User } from '~/modules/user/types/user.type.js';
 import { City } from './city.type.js';
 import { Coordinates } from './coordinates.type.js';
 import { Equipment } from './equipment.enum.js';
 import { HouseType } from './house-type.enum.js';
-import { User } from '../modules/user/types/user.type.js';
 
 export type Offer = {
   title: string;
