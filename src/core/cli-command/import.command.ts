@@ -2,15 +2,15 @@ import { UserServiceInterface } from '~/modules/user/services/user-service.inter
 import UserService from '~/modules/user/services/user.service.js';
 import { UserModel } from '~/modules/user/entity/user.entity.js';
 import { Offer } from '~/modules/offer/types/offer.type.js';
+import { OfferServiceInterface } from '~/modules/offer/services/offer-service.interface.js';
+import OfferService from '~/modules/offer/services/offer.service.js';
+import { OfferModel } from '~/modules/offer/entity/offer.entity.js';
 import { DatabaseClientInterface } from '../database-client/database-client.interface.js';
 import MongoClientService from '../database-client/mongo-client.service.js';
 import TSVFileReader from '../file-reader/tsv-file-reader.js';
 import { createOffer } from '../helpers/offers.js';
 import { LoggerInterface } from '../logger/logger.interface.js';
 import { CLICommandInterface } from './cli-command.interface.js';
-import { OfferServiceInterface } from '../../modules/offer/services/offer-service.interface.js';
-import OfferService from '../../modules/offer/services/offer.service.js';
-import { OfferModel } from '../../modules/offer/entity/offer.entity.js';
 import { getMongoURI } from '../helpers/db.js';
 import ConsoleService from '../logger/console.service.js';
 
