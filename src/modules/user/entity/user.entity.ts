@@ -1,6 +1,6 @@
 import { getModelForClass, modelOptions, prop } from '@typegoose/typegoose';
 import { Base, TimeStamps } from '@typegoose/typegoose/lib/defaultClasses.js';
-import { createSHA256 } from '~/core/helpers/index.js';
+import { createSHA256 } from '../../../core/helpers/index.js';
 import { User } from '../types/user.type.js';
 import { UserType } from '../types/user-type.enum.js';
 

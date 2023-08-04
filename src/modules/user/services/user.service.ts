@@ -3,8 +3,8 @@ import { DocumentType, types } from '@typegoose/typegoose';
 import CreateUserDto from '../dto/create-user.dto.js';
 import { UserEntity } from '../entity/user.entity.js';
 import { UserServiceInterface } from './user-service.interface.js';
-import { AppComponent } from '~/types/app-component.enum.js';
-import { LoggerInterface } from '~/core/logger/logger.interface.js';
+import { AppComponent } from '../../../types/app-component.enum.js';
+import { LoggerInterface } from '../../../core/logger/logger.interface.js';
 
 @injectable()
 export default class UserService implements UserServiceInterface {

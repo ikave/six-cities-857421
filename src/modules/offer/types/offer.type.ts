@@ -1,4 +1,4 @@
-import { User } from '~/modules/user/types/user.type.js';
+import { User } from '../../../modules/user/types/user.type.js';
 import { City } from './city.type.js';
 import { Coordinates } from './coordinates.type.js';
 import { Equipment } from './equipment.enum.js';

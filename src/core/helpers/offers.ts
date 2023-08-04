@@ -1,11 +1,11 @@
-import { Cities } from '~/modules/offer/types/cities.enum.js';
-import { City } from '~/modules/offer/types/city.type.js';
-import { Coordinates } from '~/modules/offer/types/coordinates.type.js';
-import { Equipment } from '~/modules/offer/types/equipment.enum.js';
-import { HouseType } from '~/modules/offer/types/house-type.enum.js';
-import { Offer } from '~/modules/offer/types/offer.type.js';
-import { UserType } from '~/modules/user/types/user-type.enum.js';
-import { User } from '~/modules/user/types/user.type.js';
+import { Cities } from '../../modules/offer/types/cities.enum.js';
+import { City } from '../../modules/offer/types/city.type.js';
+import { Coordinates } from '../../modules/offer/types/coordinates.type.js';
+import { Equipment } from '../../modules/offer/types/equipment.enum.js';
+import { HouseType } from '../../modules/offer/types/house-type.enum.js';
+import { Offer } from '../../modules/offer/types/offer.type.js';
+import { UserType } from '../../modules/user/types/user-type.enum.js';
+import { User } from '../../modules/user/types/user.type.js';
 
 const getCity = ([cityName, latitude, longitude]: string[]): City => ({
   name: cityName as Cities,
