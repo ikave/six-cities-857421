@@ -5,4 +5,6 @@ export enum AppComponent {
   DatabaseClientInterface = 'DatabaseClientInterface',
   UserServiceInterface = 'UserServiceInterface',
   UserModel = 'UserModel',
+  OfferServiceInterface = 'OfferServiceInterface',
+  OfferModel = 'OfferModel',
 }
