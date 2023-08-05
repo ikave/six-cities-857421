@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
-import { CLICommandInterface } from './cli-command.interface';
+import { CLICommandInterface } from './cli-command.interface.js';
 
 export default class VersionCommand implements CLICommandInterface {
   public readonly name = '--version';

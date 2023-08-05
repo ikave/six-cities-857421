@@ -1,11 +1,11 @@
-import { Cities } from '../../types/cities.enum';
-import { City } from '../../types/city.type';
-import { Coordinates } from '../../types/coordinates.type';
-import { Equipment } from '../../types/equipment.enum';
-import { HouseType } from '../../types/house-type.enum';
-import { Offer } from '../../types/offer.type';
-import { UserType } from '../../types/user-type.enum';
-import { User } from '../../types/user.type';
+import { Cities } from '../../modules/offer/types/cities.enum.js';
+import { City } from '../../modules/offer/types/city.type.js';
+import { Coordinates } from '../../modules/offer/types/coordinates.type.js';
+import { Equipment } from '../../modules/offer/types/equipment.enum.js';
+import { HouseType } from '../../modules/offer/types/house-type.enum.js';
+import { Offer } from '../../modules/offer/types/offer.type.js';
+import { UserType } from '../../modules/user/types/user-type.enum.js';
+import { User } from '../../modules/user/types/user.type.js';
 
 const getCity = ([cityName, latitude, longitude]: string[]): City => ({
   name: cityName as Cities,
@@ -23,11 +23,10 @@ export const transformCityObjectToString = ({
 const getEquipment = (equipments: string[]): Equipment[] =>
   equipments.map((equipment) => equipment as Equipment);
 
-const getOwner = ([name, email, avatar, password, type]: string[]): User => ({
+const getOwner = ([name, email, avatar, type]: string[]): User => ({
   name,
   email,
   avatar,
-  password,
   type: type as UserType,
 });
 

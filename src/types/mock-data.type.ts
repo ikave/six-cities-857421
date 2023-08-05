@@ -1,8 +1,8 @@
-import { City } from './city.type';
-import { Coordinates } from './coordinates.type';
-import { Equipment } from './equipment.enum';
-import { HouseType } from './house-type.enum';
-import { User } from './user.type';
+import { City } from '../modules/offer/types/city.type.js';
+import { Coordinates } from '../modules/offer/types/coordinates.type.js';
+import { Equipment } from '../modules/offer/types/equipment.enum.js';
+import { HouseType } from '../modules/offer/types/house-type.enum.js';
+import { User } from '../modules/user/types/user.type.js';
 
 export type MockData = {
   title: string[];
