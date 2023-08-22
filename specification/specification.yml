@@ -1,0 +1,675 @@
+openapi: '3.0.2'
+info:
+  title: Six cities API
+  version: '1.0'
+servers:
+  - url: https://api.server.test/v1
+tags:
+  - name: User
+    description: Действия с пользователями
+  - name: Offers
+    description: Действия с предложениями
+  - name: Comments
+    description: Действия с комментариями
+  - name: Premiums
+    description: Действия с премиальными предложениями
+  - name: Favorites
+    description: Действия с избранными предложениями
+paths:
+  /register:
+    post:
+      tags:
+        - User
+      summary: Создание пользователя
+      requestBody:
+        description: Данные пользователя
+        content:
+          aplication/json:
+            schema:
+              $ref: '#/components/schemas/Signup'
+        required: true
+      responses:
+        '201':
+          description: Успешное создание пользователя
+          content:
+            aplication/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '409':
+          description: Пользователь с таким email уже существует.
+
+  /login:
+    post:
+      tags:
+        - User
+      summary: Авторизация пользователя
+      requestBody:
+        description: Данные для авторизации
+        content:
+          aplication/json:
+            schema:
+              $ref: '#/components/schemas/Signin'
+        required: true
+      responses:
+        '200':
+          description: Успешная авторизация
+          headers:
+            X-Token:
+              description: Токен авторизации
+              schema:
+                type: string
+                example: a33davxb36au3b31
+          content:
+            aplication/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Неверный логин или пароль.
+
+  /logout:
+    delete:
+      tags:
+        - User
+      summary: Завершение авторизации
+      parameters:
+        - name: X-Token
+          in: header
+          description: Токен авторизации
+          schema:
+            type: string
+            example: a33davxb36au3b31
+          required: true
+      responses:
+        '200':
+          description: Успешное завершение авторизации
+        default:
+          description: Неизвестная ошибка
+          content:
+            aplication/json:
+              schema:
+                $ref: '#/components/schemas/DefaultError'
+
+  /profile:
+    get:
+      tags:
+        - User
+      summary: Получение данных о пользователе
+      parameters:
+        - name: X-Token
+          in: header
+          description: Токен авторизации
+          schema:
+            type: string
+            example: a33davxb36au3b31
+          required: true
+      responses:
+        '200':
+          description: Успешное получение данных пользователя
+          content:
+            aplication/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        default:
+          description: Неизвестная ошибка
+          content:
+            aplication/json:
+              schema:
+                $ref: '#/components/schemas/DefaultError'
+
+    patch:
+      tags:
+        - User
+      summary: Редактирование профиля
+      parameters:
+        - name: X-Token
+          in: header
+          description: Токен авторизации
+          schema:
+            type: string
+            example: a33davxb36au3b31
+          required: true
+      requestBody:
+        description: Данные для обновления профиля пользователя
+        content:
+          aplication/json:
+            schema:
+              $ref: '#/components/schemas/Signup'
+      responses:
+        '200':
+          description: Успешное редактирование профиля пользователя
+
+  /offers:
+    get:
+      tags:
+        - Offers
+      summary: Получение списка предложений
+      description: Не более 60 предложений
+      responses:
+        '200':
+          description: Успешное получение списка предложений
+          content:
+            aplication/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Offer'
+                maxLength: 60
+        default:
+          description: Неизвестная ошибка
+          content:
+            aplication/json:
+              schema:
+                $ref: '#/components/schemas/DefaultError'
+    post:
+      tags:
+        - Offers
+      summary: Создание нового предложения
+      parameters:
+        - name: X-Token
+          in: header
+          description: Токен авторизации
+          schema:
+            type: string
+            example: a33davxb36au3b31
+          required: true
+      requestBody:
+        description: 'Данные для создания нового предложения'
+        content:
+          aplication/json:
+            schema:
+              $ref: '#/components/schemas/NewOffer'
+        required: true
+      responses:
+        '201':
+          description: Предложение создано
+          content:
+            aplication/json:
+              schema:
+                $ref: '#/components/schemas/Offer'
+        '401':
+          description: Пользователь не авторизован
+          content:
+            aplication/json:
+              schema:
+                $ref: '#/components/schemas/AuthError'
+        default:
+          description: Неизвестная ошибка
+          content:
+            aplication/json:
+              schema:
+                $ref: '#/components/schemas/DefaultError'
+
+  /offers/{offerId}:
+    get:
+      tags:
+        - Offers
+      summary: Получение предложения по id
+      parameters:
+        - name: offerId
+          in: path
+          description: Идентификатор предложения
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: '200'
+          content:
+            aplication/json:
+              schema:
+                $ref: '#/components/schemas/Offer'
+        default:
+          description: Неизвестная ошибка
+          content:
+            aplication/json:
+              schema:
+                $ref: '#/components/schemas/DefaultError'
+
+    patch:
+      tags:
+        - Offers
+      summary: Редактирование предложения
+      parameters:
+        - name: X-Token
+          in: header
+          description: Токен авторизации
+          schema:
+            type: string
+            example: a33davxb36au3b31
+          required: true
+        - name: offerId
+          in: path
+          description: Идентификатор предложения
+          schema:
+            type: string
+          required: true
+      requestBody:
+        description: Измененные данные
+        content:
+          aplication/json:
+            schema:
+              $ref: '#/components/schemas/Offer'
+      responses:
+        '200':
+          description: Успешное редактирование
+          content:
+            aplication/json:
+              schema:
+                $ref: '#/components/schemas/Offer'
+        default:
+          description: Неизвестная ошибка
+          content:
+            aplication/json:
+              schema:
+                $ref: '#/components/schemas/DefaultError'
+    delete:
+      tags:
+        - Offers
+      summary: Удаление предложения
+      parameters:
+        - name: X-Token
+          in: header
+          description: Токен авторизации
+          schema:
+            type: string
+            example: a33davxb36au3b31
+          required: true
+        - name: offerId
+          in: path
+          description: Идентификатор предложения
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Успешное удаление предложения
+        default:
+          description: Неизвестная ошибка
+          content:
+            aplication/json:
+              schema:
+                $ref: '#/components/schemas/DefaultError'
+
+  /offers/{offerId}/comments:
+    get:
+      tags:
+        - Comments
+      summary: Получение списка комментриев
+      parameters:
+        - name: offerId
+          in: path
+          description: Идентификатор предложения
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Успешное получение списка комментариев
+          content:
+            aplication/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Comment'
+        default:
+          description: Неизвестная ошибка
+          content:
+            aplication/json:
+              schema:
+                $ref: '#/components/schemas/DefaultError'
+
+    post:
+      tags:
+        - Comments
+      summary: Добавление комментария
+      parameters:
+        - name: X-Token
+          in: header
+          description: Токен авторизации
+          schema:
+            type: string
+            example: a33davxb36au3b31
+          required: true
+        - name: offerId
+          in: path
+          description: Идентификатор предложения
+          schema:
+            type: string
+          required: true
+      requestBody:
+        description: Данные для добавления комментария
+        content:
+          aplication/json:
+            schema:
+              $ref: '#/components/schemas/NewComment'
+        required: true
+      responses:
+        '200':
+          description: Успешное добавление комментария
+          content:
+            aplication/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+        default:
+          description: Неизвестная ошибка
+          content:
+            aplication/json:
+              schema:
+                $ref: '#/components/schemas/DefaultError'
+
+  /premium/{cityName}:
+    get:
+      tags:
+        - Premiums
+      summary: Получение списка премиальных предложений
+      description: Максимальное количество премиум предложений 3
+      parameters:
+        - name: cityName
+          in: path
+          description: Название города
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Успешное получение списка премиальных предложений
+          content:
+            aplication/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Offer'
+                maxLength: 3
+        default:
+          description: Неизвестная ошибка
+          content:
+            aplication/json:
+              schema:
+                $ref: '#/components/schemas/DefaultError'
+
+  /favorites:
+    get:
+      tags:
+        - Favorites
+      summary: Получение списка избранных предложений
+      responses:
+        '200':
+          description: Успешное получение списка избранных предложений
+          content:
+            aplication/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Offer'
+        default:
+          description: Неизвестная ошибка
+          content:
+            aplication/json:
+              schema:
+                $ref: '#/components/schemas/DefaultError'
+  /favorites/{offerId}/{status}:
+    post:
+      tags:
+        - Favorites
+      summary: Добавление/Удаление предложения в/из избранное
+      parameters:
+        - name: X-Token
+          in: header
+          description: Токен авторизации
+          schema:
+            type: string
+            example: a33davxb36au3b31
+          required: true
+        - name: offerId
+          in: path
+          description: Идентификатор предложения
+          schema:
+            type: string
+          required: true
+        - name: status
+          in: path
+          description: Статус избранного предложения
+          schema:
+            type: number
+            example: 1
+          required: true
+      responses:
+        '200':
+          description: Успешное добавление
+          content:
+            aplication/json:
+              schema:
+                $ref: '#/components/schemas/Offer'
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        avatar:
+          type: string
+        type:
+          type: string
+          enum:
+            - default
+            - pro
+        createdAt:
+          type: string
+        updetedAt:
+          type: string
+
+    Signup:
+      type: object
+      properties:
+        email:
+          type: string
+        name:
+          type: string
+        password:
+          type: string
+        type:
+          type: string
+          enum:
+            - default
+            - pro
+
+    Signin:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+
+    Offer:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/NewOffer'
+      properties:
+        id:
+          type: string
+          example: 64e05bcc0517b8d356cd36f1
+        createdAt:
+          type: string
+          example: 2023-08-10T06:06:04.950Z
+        updetedAt:
+          type: string
+          example: 2023-08-10T06:06:04.950Z
+
+    NewOffer:
+      type: object
+      properties:
+        title:
+          type: string
+          example: 1-к. квартира, 35,2 м²
+        description:
+          type: string
+          example: Санузел в керамогранитной плитке, там же установлена стиральная машинка.
+        date:
+          type: string
+          example: Sat Aug 19 2023 09:00:27 GMT+0300
+        city:
+          type: object
+          $ref: '#/components/schemas/City'
+        preview:
+          type: string
+          example: 'http://pawof.bb/fa.jpg'
+        pictures:
+          type: array
+          items:
+            type: string
+            minLength: 6
+            maxLength: 6
+            example: 'http://pawof.bb/fa.jpg'
+        isPremium:
+          type: boolean
+        isFavorite:
+          type: boolean
+        raiting:
+          type: number
+          minimum: 1
+          maximum: 5
+          example: 4.2
+        houseType:
+          type: string
+          enum:
+            - apartment
+            - house
+            - room
+            - hotel
+          example: house
+        rooms:
+          type: number
+          minimum: 1
+          maximum: 8
+          example: 3
+        guests:
+          type: number
+          minimum: 1
+          maximum: 10
+          example: 4
+        price:
+          type: number
+          minimum: 100
+          maximum: 10000
+          example: 1209
+        equipment:
+          type: array
+          items:
+            type: string
+            enum:
+              - Breakfast
+              - Air conditioning
+              - Laptop friendly workspace
+              - Baby seat
+              - Washer
+              - Towels
+              - Fridge
+            example: Fridge
+        owner:
+          type: string
+          example: 64e05bcc0517b8d356cd36ee
+        commentsCount:
+          type: number
+          example: 43
+        coordinates:
+          type: object
+          $ref: '#/components/schemas/Coordinates'
+
+    Coordinates:
+      type: object
+      properties:
+        latitude:
+          type: number
+          example: 50.846557
+        longitude:
+          type: number
+          example: 4.351697
+
+    City:
+      type: object
+      properties:
+        name:
+          type: string
+          enum:
+            - Paris
+            - Cologne
+            - Brussels
+            - Amsterdam
+            - Hamburg
+            - Dusseldorf
+          example: Paris
+        coordinates:
+          type: object
+          $ref: '#/components/schemas/Coordinates'
+
+    Comment:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 64e05bcc0517b8d356cd36f1
+        text:
+          type: string
+          example: Текст комментария
+        raiting:
+          type: number
+          minimum: 1
+          maximum: 5
+          example: 4
+        owner:
+          type: string
+          example: 64e05bcc0517b8d356cd36ee
+        createdAt:
+          type: string
+          example: 2023-08-10T06:06:04.950Z
+
+    NewComment:
+      type: object
+      properties:
+        text:
+          type: string
+          example: Текст комментария
+        raiting:
+          type: number
+          minimum: 1
+          maximum: 5
+          example: 4
+        owner:
+          type: string
+          example: 64e05bcc0517b8d356cd36ee
+
+    DefaultError:
+      type: object
+      properties:
+        code:
+          type: number
+          example: 500
+        message:
+          type: string
+          example: Неизвестная ошибка
+    NotFoundError:
+      type: object
+      properties:
+        code:
+          type: number
+          example: 404
+        message:
+          type: string
+          example: Не найдено
+    AuthError:
+      type: object
+      properties:
+        code:
+          type: number
+          example: 401
+        message:
+          type: string
+          example: Пользователь не авторизован
+
