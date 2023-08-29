@@ -126,6 +126,8 @@ export class OfferEntity extends TimeStamps {
 
   @prop({
     type: Number,
+    default: 0,
+    required: true,
   })
   public commentsCount!: number;
 
