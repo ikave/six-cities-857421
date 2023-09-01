@@ -9,5 +9,6 @@ export enum AppComponent {
   OfferModel = 'OfferModel',
   CommentServiceInterface = 'CommentServiceInterface',
   CommentModel = 'CommentModal',
+  CityServiceInterface = 'CityServiceInterface',
+  CityModel = 'CityModel',
 }
-
