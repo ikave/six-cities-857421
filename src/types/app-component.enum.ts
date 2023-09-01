@@ -11,4 +11,6 @@ export enum AppComponent {
   CommentModel = 'CommentModal',
   CityServiceInterface = 'CityServiceInterface',
   CityModel = 'CityModel',
+  FavoriteServiceInterface = 'FavoriteServiceInterface',
+  FavoriteModel = 'FavoriteModel',
 }
