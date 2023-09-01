@@ -3,7 +3,7 @@ info:
   title: Six cities API
   version: '1.0'
 servers:
-  - url: https://api.server.test/v1
+  - url: http://localhost:3000
 tags:
   - name: User
     description: Действия с пользователями
@@ -16,15 +16,16 @@ tags:
   - name: Favorites
     description: Действия с избранными предложениями
 paths:
-  /register:
+  /user/register:
     post:
+      security: []
       tags:
         - User
       summary: Создание пользователя
       requestBody:
         description: Данные пользователя
         content:
-          aplication/json:
+          application/json:
             schema:
               $ref: '#/components/schemas/Signup'
         required: true
@@ -32,21 +33,22 @@ paths:
         '201':
           description: Успешное создание пользователя
           content:
-            aplication/json:
+            application/json:
               schema:
                 $ref: '#/components/schemas/User'
         '409':
           description: Пользователь с таким email уже существует.
 
-  /login:
+  /user/login:
     post:
+      security: []
       tags:
         - User
       summary: Авторизация пользователя
       requestBody:
         description: Данные для авторизации
         content:
-          aplication/json:
+          application/json:
             schema:
               $ref: '#/components/schemas/Signin'
         required: true
@@ -60,59 +62,43 @@ paths:
                 type: string
                 example: a33davxb36au3b31
           content:
-            aplication/json:
+            application/json:
               schema:
                 $ref: '#/components/schemas/User'
         '400':
           description: Неверный логин или пароль.
 
-  /logout:
+  /user/logout:
     delete:
       tags:
         - User
       summary: Завершение авторизации
-      parameters:
-        - name: X-Token
-          in: header
-          description: Токен авторизации
-          schema:
-            type: string
-            example: a33davxb36au3b31
-          required: true
       responses:
         '200':
           description: Успешное завершение авторизации
         default:
           description: Неизвестная ошибка
           content:
-            aplication/json:
+            application/json:
               schema:
                 $ref: '#/components/schemas/DefaultError'
 
-  /profile:
+  /user/profile:
     get:
       tags:
         - User
       summary: Получение данных о пользователе
-      parameters:
-        - name: X-Token
-          in: header
-          description: Токен авторизации
-          schema:
-            type: string
-            example: a33davxb36au3b31
-          required: true
       responses:
         '200':
           description: Успешное получение данных пользователя
           content:
-            aplication/json:
+            application/json:
               schema:
                 $ref: '#/components/schemas/User'
         default:
           description: Неизвестная ошибка
           content:
-            aplication/json:
+            application/json:
               schema:
                 $ref: '#/components/schemas/DefaultError'
 
@@ -120,26 +106,23 @@ paths:
       tags:
         - User
       summary: Редактирование профиля
-      parameters:
-        - name: X-Token
-          in: header
-          description: Токен авторизации
-          schema:
-            type: string
-            example: a33davxb36au3b31
-          required: true
       requestBody:
         description: Данные для обновления профиля пользователя
         content:
-          aplication/json:
+          application/json:
             schema:
               $ref: '#/components/schemas/Signup'
       responses:
         '200':
           description: Успешное редактирование профиля пользователя
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
 
   /offers:
     get:
+      security: []
       tags:
         - Offers
       summary: Получение списка предложений
@@ -148,7 +131,7 @@ paths:
         '200':
           description: Успешное получение списка предложений
           content:
-            aplication/json:
+            application/json:
               schema:
                 type: array
                 items:
@@ -157,25 +140,17 @@ paths:
         default:
           description: Неизвестная ошибка
           content:
-            aplication/json:
+            application/json:
               schema:
                 $ref: '#/components/schemas/DefaultError'
     post:
       tags:
         - Offers
       summary: Создание нового предложения
-      parameters:
-        - name: X-Token
-          in: header
-          description: Токен авторизации
-          schema:
-            type: string
-            example: a33davxb36au3b31
-          required: true
       requestBody:
         description: 'Данные для создания нового предложения'
         content:
-          aplication/json:
+          application/json:
             schema:
               $ref: '#/components/schemas/NewOffer'
         required: true
@@ -183,24 +158,25 @@ paths:
         '201':
           description: Предложение создано
           content:
-            aplication/json:
+            application/json:
               schema:
                 $ref: '#/components/schemas/Offer'
         '401':
           description: Пользователь не авторизован
           content:
-            aplication/json:
+            application/json:
               schema:
                 $ref: '#/components/schemas/AuthError'
         default:
           description: Неизвестная ошибка
           content:
-            aplication/json:
+            application/json:
               schema:
                 $ref: '#/components/schemas/DefaultError'
 
   /offers/{offerId}:
     get:
+      security: []
       tags:
         - Offers
       summary: Получение предложения по id
@@ -215,13 +191,13 @@ paths:
         '200':
           description: '200'
           content:
-            aplication/json:
+            application/json:
               schema:
                 $ref: '#/components/schemas/Offer'
         default:
           description: Неизвестная ошибка
           content:
-            aplication/json:
+            application/json:
               schema:
                 $ref: '#/components/schemas/DefaultError'
 
@@ -230,13 +206,6 @@ paths:
         - Offers
       summary: Редактирование предложения
       parameters:
-        - name: X-Token
-          in: header
-          description: Токен авторизации
-          schema:
-            type: string
-            example: a33davxb36au3b31
-          required: true
         - name: offerId
           in: path
           description: Идентификатор предложения
@@ -246,20 +215,20 @@ paths:
       requestBody:
         description: Измененные данные
         content:
-          aplication/json:
+          application/json:
             schema:
               $ref: '#/components/schemas/Offer'
       responses:
         '200':
           description: Успешное редактирование
           content:
-            aplication/json:
+            application/json:
               schema:
                 $ref: '#/components/schemas/Offer'
         default:
           description: Неизвестная ошибка
           content:
-            aplication/json:
+            application/json:
               schema:
                 $ref: '#/components/schemas/DefaultError'
     delete:
@@ -267,13 +236,6 @@ paths:
         - Offers
       summary: Удаление предложения
       parameters:
-        - name: X-Token
-          in: header
-          description: Токен авторизации
-          schema:
-            type: string
-            example: a33davxb36au3b31
-          required: true
         - name: offerId
           in: path
           description: Идентификатор предложения
@@ -286,12 +248,13 @@ paths:
         default:
           description: Неизвестная ошибка
           content:
-            aplication/json:
+            application/json:
               schema:
                 $ref: '#/components/schemas/DefaultError'
 
   /offers/{offerId}/comments:
     get:
+      security: []
       tags:
         - Comments
       summary: Получение списка комментриев
@@ -306,7 +269,7 @@ paths:
         '200':
           description: Успешное получение списка комментариев
           content:
-            aplication/json:
+            application/json:
               schema:
                 type: array
                 items:
@@ -314,7 +277,7 @@ paths:
         default:
           description: Неизвестная ошибка
           content:
-            aplication/json:
+            application/json:
               schema:
                 $ref: '#/components/schemas/DefaultError'
 
@@ -323,13 +286,6 @@ paths:
         - Comments
       summary: Добавление комментария
       parameters:
-        - name: X-Token
-          in: header
-          description: Токен авторизации
-          schema:
-            type: string
-            example: a33davxb36au3b31
-          required: true
         - name: offerId
           in: path
           description: Идентификатор предложения
@@ -339,7 +295,7 @@ paths:
       requestBody:
         description: Данные для добавления комментария
         content:
-          aplication/json:
+          application/json:
             schema:
               $ref: '#/components/schemas/NewComment'
         required: true
@@ -347,18 +303,19 @@ paths:
         '200':
           description: Успешное добавление комментария
           content:
-            aplication/json:
+            application/json:
               schema:
                 $ref: '#/components/schemas/Comment'
         default:
           description: Неизвестная ошибка
           content:
-            aplication/json:
+            application/json:
               schema:
                 $ref: '#/components/schemas/DefaultError'
 
   /premium/{cityName}:
     get:
+      security: []
       tags:
         - Premiums
       summary: Получение списка премиальных предложений
@@ -374,7 +331,7 @@ paths:
         '200':
           description: Успешное получение списка премиальных предложений
           content:
-            aplication/json:
+            application/json:
               schema:
                 type: array
                 items:
@@ -383,7 +340,7 @@ paths:
         default:
           description: Неизвестная ошибка
           content:
-            aplication/json:
+            application/json:
               schema:
                 $ref: '#/components/schemas/DefaultError'
 
@@ -396,7 +353,7 @@ paths:
         '200':
           description: Успешное получение списка избранных предложений
           content:
-            aplication/json:
+            application/json:
               schema:
                 type: array
                 items:
@@ -404,7 +361,7 @@ paths:
         default:
           description: Неизвестная ошибка
           content:
-            aplication/json:
+            application/json:
               schema:
                 $ref: '#/components/schemas/DefaultError'
   /favorites/{offerId}/{status}:
@@ -413,13 +370,6 @@ paths:
         - Favorites
       summary: Добавление/Удаление предложения в/из избранное
       parameters:
-        - name: X-Token
-          in: header
-          description: Токен авторизации
-          schema:
-            type: string
-            example: a33davxb36au3b31
-          required: true
         - name: offerId
           in: path
           description: Идентификатор предложения
@@ -437,7 +387,7 @@ paths:
         '200':
           description: Успешное добавление
           content:
-            aplication/json:
+            application/json:
               schema:
                 $ref: '#/components/schemas/Offer'
 
@@ -448,21 +398,21 @@ components:
       properties:
         id:
           type: string
+          example: 64e05bcc0517b8d356cd36f1
         name:
           type: string
+          example: John
         email:
           type: string
+          example: John@post.me
         avatar:
           type: string
+          example: http://se.mm/govtoho.jpg
         type:
           type: string
           enum:
             - default
             - pro
-        createdAt:
-          type: string
-        updetedAt:
-          type: string
 
     Signup:
       type: object
@@ -495,12 +445,6 @@ components:
         id:
           type: string
           example: 64e05bcc0517b8d356cd36f1
-        createdAt:
-          type: string
-          example: 2023-08-10T06:06:04.950Z
-        updetedAt:
-          type: string
-          example: 2023-08-10T06:06:04.950Z
 
     NewOffer:
       type: object
@@ -573,8 +517,9 @@ components:
               - Fridge
             example: Fridge
         owner:
-          type: string
-          example: 64e05bcc0517b8d356cd36ee
+          type: object
+          $ref: '#/components/schemas/User'
+
         commentsCount:
           type: number
           example: 43
@@ -624,8 +569,8 @@ components:
           maximum: 5
           example: 4
         owner:
-          type: string
-          example: 64e05bcc0517b8d356cd36ee
+          type: object
+          $ref: '#/components/schemas/User'
         createdAt:
           type: string
           example: 2023-08-10T06:06:04.950Z
@@ -642,8 +587,8 @@ components:
           maximum: 5
           example: 4
         owner:
-          type: string
-          example: 64e05bcc0517b8d356cd36ee
+          type: object
+          $ref: '#/components/schemas/User'
 
     DefaultError:
       type: object
@@ -672,4 +617,11 @@ components:
         message:
           type: string
           example: Пользователь не авторизован
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
 
+security:
+  - bearerAuth: []
