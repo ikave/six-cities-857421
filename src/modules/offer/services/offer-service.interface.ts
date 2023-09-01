@@ -11,7 +11,7 @@ export interface OfferServiceInterface {
     offerId: string
   ): Promise<DocumentType<OfferEntity> | null>;
   deleteById(offerId: string): Promise<DocumentType<OfferEntity> | null>;
-  find(): Promise<DocumentType<OfferEntity>[]>;
-  findPremium(isPremium: boolean): Promise<DocumentType<OfferEntity>[]>;
+  find(cityId: string): Promise<DocumentType<OfferEntity>[]>;
+  findPremium(cityId: string): Promise<DocumentType<OfferEntity>[]>;
   incComentCount(offerId: string): Promise<DocumentType<OfferEntity> | null>;
 }

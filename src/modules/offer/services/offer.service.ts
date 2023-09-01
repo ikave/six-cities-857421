@@ -1,3 +1,4 @@
+import { ObjectId } from 'mongodb';
 import { inject, injectable } from 'inversify';
 import { DocumentType, types } from '@typegoose/typegoose';
 import CreateOfferDto from '../dto/create-offer.dto.js';
@@ -7,6 +8,7 @@ import { AppComponent } from '../../../types/app-component.enum.js';
 import { LoggerInterface } from '../../../core/logger/logger.interface.js';
 import UpdateOfferDto from '../dto/update-offer.dto.js';
 import { OFFER_COUNT_MAX, PREMIUM_OFFER_COUNT } from '../constants.js';
+import { SortType } from '../../../types/sort-type.enum.js';
 
 @injectable()
 export default class OfferService implements OfferServiceInterface {
@@ -31,7 +33,7 @@ export default class OfferService implements OfferServiceInterface {
   ): Promise<DocumentType<OfferEntity> | null> {
     return await this.offerModel
       .findByIdAndUpdate(offerId, dto)
-      .populate(['owner'])
+      .populate(['owner', 'city'])
       .exec();
   }
 
@@ -41,21 +43,23 @@ export default class OfferService implements OfferServiceInterface {
     return await this.offerModel.findByIdAndDelete(offerId).exec();
   }
 
-  public async find(): Promise<DocumentType<OfferEntity>[]> {
+  public async find(cityId: string): Promise<DocumentType<OfferEntity>[]> {
     return await this.offerModel
-      .find()
+      .find({ city: new ObjectId(cityId) })
       .limit(OFFER_COUNT_MAX)
-      .populate(['owner'])
+      .sort({ createdAt: SortType.Down })
+      .populate(['owner', 'city'])
       .exec();
   }
 
   public async findPremium(
-    isPremium: boolean
+    cityId: string
   ): Promise<DocumentType<OfferEntity>[]> {
     return await this.offerModel
-      .find({ isPremium })
+      .find({ city: new ObjectId(cityId), isPremium: true })
       .limit(PREMIUM_OFFER_COUNT)
-      .populate(['owner'])
+      .sort({ createdAt: SortType.Down })
+      .populate(['owner', 'city'])
       .exec();
   }
 
@@ -69,6 +73,9 @@ export default class OfferService implements OfferServiceInterface {
   public async findById(
     offerId: string
   ): Promise<DocumentType<OfferEntity> | null> {
-    return await this.offerModel.findById(offerId).populate(['owner']).exec();
+    return await this.offerModel
+      .findById(offerId)
+      .populate(['owner', 'city'])
+      .exec();
   }
 }
