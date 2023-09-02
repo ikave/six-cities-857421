@@ -1,7 +1,7 @@
 import { Container } from 'inversify';
 import { ModelType } from '@typegoose/typegoose/lib/types.js';
 import { FavoriteServiceInterface } from '../services/favorite-services.interface.js';
-import { AppComponent } from 'src/types/app-component.enum.js';
+import { AppComponent } from '../../../types/app-component.enum.js';
 import FavoriteServices from '../services/favorite.services.js';
 import { FavoriteEntity, FavoriteModel } from '../entity/favorite.entity.js';
 
