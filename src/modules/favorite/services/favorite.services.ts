@@ -18,7 +18,7 @@ export default class FavoriteServices implements FavoriteServiceInterface {
   public async add(
     offerId: string,
     userId: string
-  ): Promise<DocumentType<FavoriteEntity> | null> {
+  ): Promise<DocumentType<FavoriteEntity>> {
     let addedOffer = await this.favoriteModel
       .findOne({ offerId, userId })
       .exec();
