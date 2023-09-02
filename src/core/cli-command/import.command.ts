@@ -13,6 +13,9 @@ import { OfferModel } from '../../modules/offer/entity/offer.entity.js';
 import OfferService from '../../modules/offer/services/offer.service.js';
 import { Offer } from '../../modules/offer/types/offer.type.js';
 import UserService from '../../modules/user/services/user.service.js';
+import { CityService } from '../../modules/city/services/city.service.js';
+import { CityModel } from '../../modules/city/entity/city.entity.js';
+import { CityServiceInterface } from '../../modules/city/services/city-service.interface.js';
 
 const DEFAULT_DB_PORT = '27017';
 
@@ -21,6 +24,7 @@ export default class ImportCommand implements CLICommandInterface {
   private userService!: UserServiceInterface;
   private databaseService!: DatabaseClientInterface;
   private offerService!: OfferServiceInterface;
+  private cityService!: CityServiceInterface;
   private logger!: LoggerInterface;
   private salt!: string;
 
@@ -32,9 +36,15 @@ export default class ImportCommand implements CLICommandInterface {
     this.userService = new UserService(this.logger, UserModel);
     this.databaseService = new MongoClientService(this.logger);
     this.offerService = new OfferService(this.logger, OfferModel);
+    this.cityService = new CityService(this.logger, CityModel);
   }
 
   private async saveOffer(offer: Offer) {
+    const city = await this.cityService.findOrCreate({
+      name: offer.city.name,
+      coordinates: offer.city.coordinates,
+    });
+
     const user = await this.userService.findOrCreate(
       {
         ...offer.owner,
@@ -46,6 +56,7 @@ export default class ImportCommand implements CLICommandInterface {
     await this.offerService.create({
       ...offer,
       owner: user.id,
+      city: city.id,
     });
   }
 
@@ -54,7 +65,6 @@ export default class ImportCommand implements CLICommandInterface {
 
     await this.saveOffer({
       ...offer,
-      city: { name: offer.city.name, coordinates: offer.city.coordinates },
       equipment: [...offer.equipment],
       coordinates: offer.coordinates,
     });

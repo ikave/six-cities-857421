@@ -1,5 +1,5 @@
-import { City } from '../modules/offer/types/city.type.js';
-import { Coordinates } from '../modules/offer/types/coordinates.type.js';
+import { City } from '../modules/city/types/city.type.js';
+import { Coordinates } from './coordinates.type.js';
 import { Equipment } from '../modules/offer/types/equipment.enum.js';
 import { HouseType } from '../modules/offer/types/house-type.enum.js';
 import { User } from '../modules/user/types/user.type.js';

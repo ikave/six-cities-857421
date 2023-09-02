@@ -10,7 +10,8 @@ export function createOfferContainer() {
 
   container
     .bind<OfferServiceInterface>(AppComponent.OfferServiceInterface)
-    .to(OfferService);
+    .to(OfferService)
+    .inSingletonScope();
 
   container
     .bind<types.ModelType<OfferEntity>>(AppComponent.OfferModel)

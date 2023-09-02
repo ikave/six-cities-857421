@@ -1,6 +1,6 @@
 import { User } from '../../user/types/user.type.js';
-import { City } from '../types/city.type.js';
-import { Coordinates } from '../types/coordinates.type.js';
+import { City } from '../../city/types/city.type.js';
+import { Coordinates } from '../../../types/coordinates.type.js';
 import { Equipment } from '../types/equipment.enum.js';
 import { HouseType } from '../types/house-type.enum.js';
 

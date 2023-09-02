@@ -1,6 +1,6 @@
-import { Cities } from '../../modules/offer/types/cities.enum.js';
-import { City } from '../../modules/offer/types/city.type.js';
-import { Coordinates } from '../../modules/offer/types/coordinates.type.js';
+import { Cities } from '../../modules/city/types/cities.enum.js';
+import { City } from '../../modules/city/types/city.type.js';
+import { Coordinates } from '../../types/coordinates.type.js';
 import { Equipment } from '../../modules/offer/types/equipment.enum.js';
 import { HouseType } from '../../modules/offer/types/house-type.enum.js';
 import { Offer } from '../../modules/offer/types/offer.type.js';
@@ -63,8 +63,8 @@ export function createOffer(offerData: string): Offer {
     city: getCity(city.split(';')),
     preview,
     pictures: pictures.split(';'),
-    isPremium: Boolean(isPremium),
-    isFavorite: Boolean(isFavorite),
+    isPremium: isPremium === 'true',
+    isFavorite: isFavorite === 'true',
     raiting: Number.parseFloat(raiting),
     houseType: houseType as HouseType,
     rooms: Number.parseInt(rooms, 10),
