@@ -1,0 +1,35 @@
+# Действия с пользователем
+
+## Регистрация пользователя
+
+POST http://localhost:3000/users/register HTTP/1.1
+Content-Type: application/json
+
+{
+  "name": "Test User",
+  "email": "aea@ke.cn",
+  "avatar": "http://vi.fo/gez.png",
+  "password": "1314412",
+  "type": "pro"
+}
+
+###
+
+## Вход пользователя
+
+POST http://localhost:3000/users/login HTTP/1.1
+Content-Type: application/json
+
+{
+  "email": "we@ke.cn",
+  "password": "1314412"
+}
+
+###
+
+## Выход пользователя
+
+DELETE  http://localhost:3000/users/logout HTTP/1.1
+Content-Type: application/json
+
+###

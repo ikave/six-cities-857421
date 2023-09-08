@@ -29,7 +29,7 @@ export default class UserService implements UserServiceInterface {
   }
 
   public async findById(id: string): Promise<DocumentType<UserEntity> | null> {
-    return this.userModel.findById({ id });
+    return this.userModel.findById({ _id: id });
   }
 
   public async findByEmail(
