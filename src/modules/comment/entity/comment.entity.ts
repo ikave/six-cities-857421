@@ -25,6 +25,9 @@ export class CommentEntity extends TimeStamps {
   })
   public text!: string;
 
+  @prop()
+  public date!: Date;
+
   @prop({ type: Number, min: 1, max: 5, required: true })
   public rating!: number;
 

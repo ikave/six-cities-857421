@@ -5,6 +5,7 @@ import { FavoriteServiceInterface } from './favorite-services.interface.js';
 import { AppComponent } from '../../../types/app-component.enum.js';
 import { LoggerInterface } from '../../../core/logger/logger.interface.js';
 import { FavoriteEntity } from '../entity/favorite.entity.js';
+import { SortType } from '../../../types/sort-type.enum.js';
 
 @injectable()
 export default class FavoriteServices implements FavoriteServiceInterface {
@@ -16,19 +17,17 @@ export default class FavoriteServices implements FavoriteServiceInterface {
   ) {}
 
   public async add(
-    offerId: string,
-    userId: string
+    offer: string,
+    user: string
   ): Promise<DocumentType<FavoriteEntity>> {
-    let addedOffer = await this.favoriteModel
-      .findOne({ offerId, userId })
-      .exec();
+    let addedOffer = await this.favoriteModel.findOne({ offer, user }).exec();
 
     if (!addedOffer) {
       addedOffer = await this.favoriteModel.create({
-        offer: offerId,
-        user: userId,
+        offer,
+        user,
       });
-      this.logger.info(`Offer added to favorites: ${userId}`);
+      this.logger.info(`Offer added to favorites: ${user}`);
     }
 
     return addedOffer;
@@ -40,6 +39,7 @@ export default class FavoriteServices implements FavoriteServiceInterface {
   ): Promise<DocumentType<FavoriteEntity> | null> {
     return await this.favoriteModel
       .findOneAndDelete({ offer: offerId, user: userId })
+      .populate({ path: 'offer', populate: ['owner', 'city'] })
       .exec();
   }
 
@@ -47,6 +47,7 @@ export default class FavoriteServices implements FavoriteServiceInterface {
     return await this.favoriteModel
       .find({ user: userId })
       .populate({ path: 'offer', populate: ['owner', 'city'] })
+      .sort({ createdAt: SortType.Down })
       .exec();
   }
 

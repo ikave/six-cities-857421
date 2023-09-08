@@ -4,6 +4,8 @@ import { FavoriteServiceInterface } from '../services/favorite-services.interfac
 import { AppComponent } from '../../../types/app-component.enum.js';
 import FavoriteServices from '../services/favorite.services.js';
 import { FavoriteEntity, FavoriteModel } from '../entity/favorite.entity.js';
+import { ControllerInterface } from '../../../core/controller/controller.interface.js';
+import FavoriteController from '../controller/favorite.controller.js';
 
 export function createFavoriteContainer() {
   const container = new Container();
@@ -16,6 +18,11 @@ export function createFavoriteContainer() {
   container
     .bind<ModelType<FavoriteEntity>>(AppComponent.FavoriteModel)
     .toConstantValue(FavoriteModel);
+
+  container
+    .bind<ControllerInterface>(AppComponent.FavoriteController)
+    .to(FavoriteController)
+    .inSingletonScope();
 
   return container;
 }
