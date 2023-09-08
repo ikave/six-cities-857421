@@ -19,12 +19,16 @@ export default class OfferService implements OfferServiceInterface {
     private readonly offerModel: types.ModelType<OfferEntity>
   ) {}
 
-  public async incComentCount(
+  public async incCommentCount(
     offerId: string
   ): Promise<DocumentType<OfferEntity> | null> {
-    return await this.offerModel.findByIdAndUpdate(offerId, {
-      $inc: { commentsCount: 1 },
-    });
+    return await this.offerModel.findByIdAndUpdate(
+      offerId,
+      {
+        $inc: { commentsCount: 1 },
+      },
+      { new: true }
+    );
   }
 
   public async updateById(
@@ -32,7 +36,7 @@ export default class OfferService implements OfferServiceInterface {
     offerId: string
   ): Promise<DocumentType<OfferEntity> | null> {
     return await this.offerModel
-      .findByIdAndUpdate(offerId, dto)
+      .findByIdAndUpdate(offerId, dto, { new: true })
       .populate(['owner', 'city'])
       .exec();
   }
@@ -43,9 +47,9 @@ export default class OfferService implements OfferServiceInterface {
     return await this.offerModel.findByIdAndDelete(offerId).exec();
   }
 
-  public async find(cityId: string): Promise<DocumentType<OfferEntity>[]> {
+  public async find(): Promise<DocumentType<OfferEntity>[]> {
     return await this.offerModel
-      .find({ city: new ObjectId(cityId) })
+      .find()
       .limit(OFFER_COUNT_MAX)
       .sort({ createdAt: SortType.Down })
       .populate(['owner', 'city'])
@@ -64,7 +68,10 @@ export default class OfferService implements OfferServiceInterface {
   }
 
   public async create(dto: CreateOfferDto): Promise<DocumentType<OfferEntity>> {
-    const result = await this.offerModel.create(dto);
+    const result = (await this.offerModel.create(dto)).populate([
+      'city',
+      'owner',
+    ]);
     this.logger.info(`New offer created: ${dto.title}`);
 
     return result;
