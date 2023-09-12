@@ -8,7 +8,7 @@ import { Base, TimeStamps } from '@typegoose/typegoose/lib/defaultClasses.js';
 import { HouseType } from '../types/house-type.enum.js';
 import { Coordinates } from '../../../types/coordinates.type.js';
 import { UserEntity } from '../../user/entity/user.entity.js';
-import { CityEntity } from '../../../modules/city/entity/city.entity.js';
+import { City } from '../types/city.type.js';
 
 export interface OfferEntity extends Base {}
 
@@ -44,9 +44,8 @@ export class OfferEntity extends TimeStamps {
 
   @prop({
     required: true,
-    ref: CityEntity,
   })
-  public city!: Ref<CityEntity>;
+  public city!: City;
 
   @prop({
     type: String,

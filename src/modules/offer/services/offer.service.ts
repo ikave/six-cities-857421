@@ -1,4 +1,3 @@
-import { ObjectId } from 'mongodb';
 import { inject, injectable } from 'inversify';
 import { DocumentType, types } from '@typegoose/typegoose';
 import CreateOfferDto from '../dto/create-offer.dto.js';
@@ -47,31 +46,28 @@ export default class OfferService implements OfferServiceInterface {
     return await this.offerModel.findByIdAndDelete(offerId).exec();
   }
 
-  public async find(): Promise<DocumentType<OfferEntity>[]> {
+  public async find(city: string): Promise<DocumentType<OfferEntity>[]> {
     return await this.offerModel
-      .find()
+      .find({ 'city.name': city })
       .limit(OFFER_COUNT_MAX)
       .sort({ createdAt: SortType.Down })
-      .populate(['owner', 'city'])
+      .populate(['owner'])
       .exec();
   }
 
   public async findPremium(
-    cityId: string
+    cityName: string
   ): Promise<DocumentType<OfferEntity>[]> {
     return await this.offerModel
-      .find({ city: new ObjectId(cityId), isPremium: true })
+      .find({ 'city.name': cityName, isPremium: true })
       .limit(PREMIUM_OFFER_COUNT)
       .sort({ createdAt: SortType.Down })
-      .populate(['owner', 'city'])
+      .populate(['owner'])
       .exec();
   }
 
   public async create(dto: CreateOfferDto): Promise<DocumentType<OfferEntity>> {
-    const result = (await this.offerModel.create(dto)).populate([
-      'city',
-      'owner',
-    ]);
+    const result = (await this.offerModel.create(dto)).populate(['owner']);
     this.logger.info(`New offer created: ${dto.title}`);
 
     return result;
@@ -80,10 +76,12 @@ export default class OfferService implements OfferServiceInterface {
   public async findById(
     offerId: string
   ): Promise<DocumentType<OfferEntity> | null> {
-    return await this.offerModel
-      .findById(offerId)
-      .populate(['owner', 'city'])
-      .exec();
+    return await this.offerModel.findById(offerId).populate(['owner']).exec();
+  }
+
+  public async checkOwner(offerId: string, userId: string): Promise<boolean> {
+    const offer = await this.offerModel.findById(offerId).populate('owner');
+    return offer?.owner.id === userId;
   }
 
   public async exists(offerId: string): Promise<boolean> {

@@ -1,7 +1,6 @@
-import { Expose, Type } from 'class-transformer';
-import { City } from '../../city/types/city.type.js';
+import { Expose } from 'class-transformer';
 import { HouseType } from '../types/house-type.enum.js';
-import CityRdo from '../../city/rdo/city.rdo.js';
+import { City } from '../types/city.type.js';
 
 export default class OfferRdo {
   @Expose()
@@ -14,7 +13,6 @@ export default class OfferRdo {
   public date!: Date;
 
   @Expose()
-  @Type(() => CityRdo)
   public city!: City;
 
   @Expose()
