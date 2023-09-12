@@ -10,8 +10,7 @@ import ValidationError from '../errors/validation-error.js';
 
 @injectable()
 export default class ValidateExceptionFilter
-  implements ExceptionFilterInterface
-{
+implements ExceptionFilterInterface {
   constructor(
     @inject(AppComponent.LoggerInterface)
     private readonly logger: LoggerInterface
