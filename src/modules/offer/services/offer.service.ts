@@ -85,4 +85,8 @@ export default class OfferService implements OfferServiceInterface {
       .populate(['owner', 'city'])
       .exec();
   }
+
+  public async exists(offerId: string): Promise<boolean> {
+    return (await this.offerModel.findById({ _id: offerId })) !== null;
+  }
 }

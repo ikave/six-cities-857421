@@ -29,8 +29,12 @@ export default class RestApplication {
     private readonly commentController: ControllerInterface,
     @inject(AppComponent.FavoriteController)
     private readonly favoriteController: ControllerInterface,
-    @inject(AppComponent.ExceptionFilterInterface)
-    private readonly exceptionFilter: ExceptionFilterInterface
+    @inject(AppComponent.BaseExceptionFilter)
+    private readonly baseExceptionFilter: ExceptionFilterInterface,
+    @inject(AppComponent.ValidationExceptionFilter)
+    private readonly httpExceptionFilter: ExceptionFilterInterface,
+    @inject(AppComponent.HttpErrorExceptionFilter)
+    private readonly validateExceptionFilter: ExceptionFilterInterface
   ) {
     this.app = express();
   }
@@ -74,7 +78,11 @@ export default class RestApplication {
 
   private async _initExceptionFilters() {
     this.logger.info('Exception filters initialization');
-    this.app.use(this.exceptionFilter.catch.bind(this.exceptionFilter));
+    this.app.use(
+      this.validateExceptionFilter.catch.bind(this.validateExceptionFilter)
+    );
+    this.app.use(this.httpExceptionFilter.catch.bind(this.httpExceptionFilter));
+    this.app.use(this.baseExceptionFilter.catch.bind(this.baseExceptionFilter));
     this.logger.info('Exception filters completed');
   }
 

@@ -17,5 +17,7 @@ export enum AppComponent {
   FavoriteServiceInterface = 'FavoriteServiceInterface',
   FavoriteModel = 'FavoriteModel',
   FavoriteController = 'FavoriteController',
-  ExceptionFilterInterface = 'ExceptionFilterInterface',
+  BaseExceptionFilter = 'BaseExceptionFilter',
+  ValidationExceptionFilter = 'ValidationExceptionFilter',
+  HttpErrorExceptionFilter = 'HttpErrorExceptionFilter',
 }

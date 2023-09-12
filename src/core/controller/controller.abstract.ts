@@ -24,7 +24,7 @@ export class ControllerAbstract implements ControllerInterface {
   public addRoute(route: RouteInterface) {
     const routeHandler = asyncHandler(route.handler.bind(this));
     const middlewares = route.middlewares?.map((middleware) =>
-      asyncHandler(middleware.execute.bind(this))
+      asyncHandler(middleware.execute.bind(middleware))
     );
 
     const allHandlers = middlewares
@@ -48,5 +48,9 @@ export class ControllerAbstract implements ControllerInterface {
 
   public created<T>(res: Response, data: T): void {
     this.send(res, StatusCodes.CREATED, data);
+  }
+
+  public noContent<T>(res: Response, data: T): void {
+    this.send(res, StatusCodes.NO_CONTENT, data);
   }
 }

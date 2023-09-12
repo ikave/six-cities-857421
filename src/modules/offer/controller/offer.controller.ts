@@ -1,18 +1,21 @@
 import { Request, Response } from 'express';
 import { inject, injectable } from 'inversify';
 import { ParamsDictionary } from 'express-serve-static-core';
-import { StatusCodes } from 'http-status-codes';
 import { ControllerAbstract } from '../../../core/controller/controller.abstract.js';
 import { AppComponent } from '../../../types/app-component.enum.js';
 import { LoggerInterface } from '../../../core/logger/logger.interface.js';
 import { OfferServiceInterface } from '../services/offer-service.interface.js';
 import { HttpMethod } from '../../../types/http-method.enum.js';
 import CreateOfferDto from '../dto/create-offer.dto.js';
-import HttpError from '../../../core/errors/http-error.js';
 import { fillDto } from '../../../core/helpers/common.js';
 import OfferRdo from '../rdo/offer.rdo.js';
 import OfferDetailRdo from '../rdo/offer-detail.rdo.js';
 import { CommentServiceInterface } from '../../../modules/comment/services/comment-service.interface.js';
+import { PrivateRouteMiddleware } from '../../../core/middlewares/private-route.middleware.js';
+import { ValidateObjectIdMiddleware } from '../../../core/middlewares/validate-objectid.middleware.js';
+import { DocumentExistsMiddleware } from '../../../core/middlewares/document-exists.middleware.js';
+import { ValidateDtoMiddleware } from '../../../core/middlewares/validate-dto.middleware.js';
+import UpdateOfferDto from '../dto/update-offer.dto.js';
 
 type OffersParams =
   | {
@@ -45,24 +48,43 @@ export default class OfferController extends ControllerAbstract {
       path: '/',
       method: HttpMethod.Post,
       handler: this.createOffer,
+      middlewares: [
+        new PrivateRouteMiddleware(),
+        new ValidateDtoMiddleware(CreateOfferDto),
+      ],
     });
 
     this.addRoute({
       path: '/:offerId',
       method: HttpMethod.Get,
       handler: this.getOffer,
+      middlewares: [
+        new ValidateObjectIdMiddleware('offerId'),
+        new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
+      ],
     });
 
     this.addRoute({
       path: '/:offerId',
       method: HttpMethod.Patch,
       handler: this.updateOffer,
+      middlewares: [
+        new PrivateRouteMiddleware(),
+        new ValidateObjectIdMiddleware('offerId'),
+        new ValidateDtoMiddleware(UpdateOfferDto),
+        new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
+      ],
     });
 
     this.addRoute({
       path: '/:offerId',
       method: HttpMethod.Delete,
       handler: this.deleteOffer,
+      middlewares: [
+        new PrivateRouteMiddleware(),
+        new ValidateObjectIdMiddleware('offerId'),
+        new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
+      ],
     });
   }
 
@@ -94,14 +116,6 @@ export default class OfferController extends ControllerAbstract {
     const { offerId } = params;
     const offer = await this.offerService.findById(offerId);
 
-    if (!offer) {
-      throw new HttpError(
-        StatusCodes.NOT_FOUND,
-        'Offer not found',
-        'OfferController'
-      );
-    }
-
     const offerToResponse = fillDto(OfferDetailRdo, offer);
     this.ok(res, offerToResponse);
   }
@@ -115,15 +129,6 @@ export default class OfferController extends ControllerAbstract {
   ): Promise<void> {
     const { offerId } = params;
     const offer = await this.offerService.updateById(body, offerId);
-
-    if (!offer) {
-      throw new HttpError(
-        StatusCodes.NOT_FOUND,
-        'Offer not found',
-        'OfferController'
-      );
-    }
-
     const offerToResponse = fillDto(OfferRdo, offer);
     this.ok(res, offerToResponse);
   }
@@ -136,14 +141,6 @@ export default class OfferController extends ControllerAbstract {
     const offer = await this.offerService.deleteById(offerId);
     await this.commentService.deleteByOffer(offerId);
 
-    if (!offer) {
-      throw new HttpError(
-        StatusCodes.NOT_FOUND,
-        'Offer not found',
-        'OfferController'
-      );
-    }
-
-    this.ok(res, 'Offer has been deleted');
+    this.noContent(res, offer);
   }
 }

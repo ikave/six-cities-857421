@@ -9,7 +9,9 @@ import ConfigService from '../core/config/config.service.js';
 import { DatabaseClientInterface } from '../core/database-client/database-client.interface.js';
 import MongoClientService from '../core/database-client/mongo-client.service.js';
 import { ExceptionFilterInterface } from '../core/exception-filters/exception-filter.interface.js';
-import ExceptionFilter from '../core/exception-filters/exception-filter.js';
+import BaseExceptionFilter from '../core/exception-filters/base.exception-filter.js';
+import ValidateExceptionFilter from '../core/exception-filters/validate.exception-filter.js';
+import HttpExceptionFilter from '../core/exception-filters/http.exception-filter.js';
 
 export const createRestAppContainer = () => {
   const container = new Container();
@@ -35,8 +37,18 @@ export const createRestAppContainer = () => {
     .inSingletonScope();
 
   container
-    .bind<ExceptionFilterInterface>(AppComponent.ExceptionFilterInterface)
-    .to(ExceptionFilter)
+    .bind<ExceptionFilterInterface>(AppComponent.BaseExceptionFilter)
+    .to(BaseExceptionFilter)
+    .inSingletonScope();
+
+  container
+    .bind<ExceptionFilterInterface>(AppComponent.HttpErrorExceptionFilter)
+    .to(ValidateExceptionFilter)
+    .inSingletonScope();
+
+  container
+    .bind<ExceptionFilterInterface>(AppComponent.ValidationExceptionFilter)
+    .to(HttpExceptionFilter)
     .inSingletonScope();
 
   return container;
