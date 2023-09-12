@@ -6,6 +6,7 @@ import { UserServiceInterface } from './user-service.interface.js';
 import { AppComponent } from '../../../types/app-component.enum.js';
 import { LoggerInterface } from '../../../core/logger/logger.interface.js';
 import UpdateUserDto from '../dto/update-user.dto.js';
+import LoginUserDto from '../dto/login-user.dto.js';
 
 @injectable()
 export default class UserService implements UserServiceInterface {
@@ -52,5 +53,22 @@ export default class UserService implements UserServiceInterface {
     dto: UpdateUserDto
   ): Promise<DocumentType<UserEntity> | null> {
     return await this.userModel.findByIdAndUpdate(id, dto).exec();
+  }
+
+  public async verifyUser(
+    dto: LoginUserDto,
+    salt: string
+  ): Promise<DocumentType<UserEntity> | null> {
+    const user = await this.findByEmail(dto.email);
+
+    if (!user) {
+      return null;
+    }
+
+    if (user.verifyPassword(dto.password, salt)) {
+      return user;
+    }
+
+    return null;
   }
 }

@@ -21,9 +21,16 @@ POST http://localhost:3000/users/login HTTP/1.1
 Content-Type: application/json
 
 {
-  "email": "we@ke.cn",
+  "email": "aea@ke.cn",
   "password": "1314412"
 }
+
+###
+
+## Проверка авторизации
+
+GET http://localhost:3000/users/login HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJwYXlsb2FkIjp7ImVtYWlsIjoiYWVhQGtlLmNuIiwiaWQiOiI2NGZmMzAxMTk2NTAxODkzMmRhMzI0YzgifSwiaWF0IjoxNjk0NDQ1NjQwLCJleHAiOjE2OTUwNTA0NDB9.3iv5pwHjEtCIAkWmWTayhcHEgmcFSZ09b0WYUZIWZag
 
 ###
 

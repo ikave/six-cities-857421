@@ -8,6 +8,7 @@ import { DatabaseClientInterface } from '../core/database-client/database-client
 import { getMongoURI } from '../core/helpers/db.js';
 import { ControllerInterface } from '../core/controller/controller.interface.js';
 import { ExceptionFilterInterface } from '../core/exception-filters/exception-filter.interface.js';
+import { AuthMiddleware } from '../core/middlewares/auth.middleware.js';
 
 @injectable()
 export default class RestApplication {
@@ -65,6 +66,9 @@ export default class RestApplication {
   private async _initMiddleware() {
     this.logger.info('Global middleware initialization...');
     this.app.use(express.json());
+
+    const authMiddleware = new AuthMiddleware(this.config.get('JWT_SECRET'));
+    this.app.use(authMiddleware.execute.bind(authMiddleware));
     this.logger.info('Global middleware initialization completed');
   }
 

@@ -11,6 +11,7 @@ export type RestSchema = {
   DB_PASSWORD: string;
   DB_PORT: string;
   DB_NAME: string;
+  JWT_SECRET: string;
 };
 
 export const configRestSchema = convict<RestSchema>({
@@ -55,5 +56,11 @@ export const configRestSchema = convict<RestSchema>({
     format: String,
     env: 'DB_NAME',
     default: 'six-cities',
+  },
+  JWT_SECRET: {
+    doc: 'JWT secret key',
+    format: String,
+    env: 'JWT_SECRET',
+    default: null,
   },
 });

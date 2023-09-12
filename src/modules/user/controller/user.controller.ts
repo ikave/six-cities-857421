@@ -7,13 +7,14 @@ import { LoggerInterface } from '../../../core/logger/logger.interface.js';
 import { AppComponent } from '../../../types/app-component.enum.js';
 import { HttpMethod } from '../../../types/http-method.enum.js';
 import { UserServiceInterface } from '../services/user-service.interface.js';
-import { fillDto } from '../../../core/helpers/common.js';
+import { createJWT, fillDto } from '../../../core/helpers/common.js';
 import UserRdo from '../rdo/user.rdo.js';
 import HttpError from '../../../core/errors/http-error.js';
 import CreateUserDto from '../dto/create-user.dto.js';
 import ConfigService from '../../../core/config/config.service.js';
 import LoginUserDto from '../dto/login-user.dto.js';
 import { ValidateDtoMiddleware } from '../../../core/middlewares/validate-dto.middleware.js';
+import { JWT_ALGORITHM } from '../constants/user.constants.js';
 
 type ParamsUserDetail =
   | {
@@ -55,6 +56,11 @@ export default class UserController extends ControllerAbstract {
       path: '/login',
       method: HttpMethod.Post,
       handler: this.login,
+    });
+    this.addRoute({
+      path: '/login',
+      method: HttpMethod.Get,
+      handler: this.checkAuth,
     });
     this.addRoute({
       path: '/logout',
@@ -111,7 +117,10 @@ export default class UserController extends ControllerAbstract {
     }: Request<Record<string, unknown>, Record<string, unknown>, LoginUserDto>,
     res: Response
   ): Promise<void> {
-    const user = await this.userService.findByEmail(body.email);
+    const user = await this.userService.verifyUser(
+      body,
+      this.configService.get('SALT')
+    );
 
     if (!user) {
       throw new HttpError(
@@ -120,7 +129,17 @@ export default class UserController extends ControllerAbstract {
         'UserController'
       );
     }
-    this.ok(res, 'Login is success');
+
+    const token = await createJWT(
+      JWT_ALGORITHM,
+      this.configService.get('JWT_SECRET'),
+      { email: user.email, id: user.id }
+    );
+
+    this.ok(res, {
+      ...fillDto(UserRdo, user),
+      token,
+    });
   }
 
   public logout(_req: Request, res: Response): void {
@@ -129,5 +148,21 @@ export default class UserController extends ControllerAbstract {
 
   public updateProfile(_req: Request, res: Response): void {
     this.ok(res, 'Updated Profile');
+  }
+
+  public async checkAuth(_req: Request, res: Response): Promise<void> {
+    if (!res.locals.user) {
+      throw new HttpError(
+        StatusCodes.UNAUTHORIZED,
+        'Unauthorized',
+        'UserController'
+      );
+    }
+
+    const { email } = res.locals.user;
+
+    const foundedUser = await this.userService.findByEmail(email);
+
+    this.ok(res, fillDto(UserRdo, foundedUser));
   }
 }
