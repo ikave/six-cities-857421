@@ -2,26 +2,24 @@
 
 ## Добавить в избранное
 
-POST http://localhost:3000/favorites HTTP/1.1
+POST http://localhost:3000/favorites/65005495a9320affd8d107c4 HTTP/1.1
 Content-Type: application/json
-
-{
-  "offer": "64f5dd45cd1bc981b87cab9c",
-  "user": "64f5dd45cd1bc981b87cab78"
-}
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJwYXlsb2FkIjp7ImVtYWlsIjoiY2FAa2UuY24iLCJpZCI6IjY1MDA1NDk1YTkzMjBhZmZkOGQxMDdiYiJ9LCJpYXQiOjE2OTQ1MjQwMTIsImV4cCI6MTY5NTEyODgxMn0.ON_GjY70Ul7b2iopSEAgRq1EIaMrHVxoyy5JT_eSd-w
 
 ###
 
 ## Удалить из избранного
 
-DELETE http://localhost:3000/favorites/64f5dd45cd1bc981b87cab7a/64f5dd45cd1bc981b87cab6e HTTP/1.1
+DELETE http://localhost:3000/favorites/65005495a9320affd8d107c4 HTTP/1.1
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJwYXlsb2FkIjp7ImVtYWlsIjoiY2FAa2UuY24iLCJpZCI6IjY1MDA1NDk1YTkzMjBhZmZkOGQxMDdiYiJ9LCJpYXQiOjE2OTQ1MjQwMTIsImV4cCI6MTY5NTEyODgxMn0.ON_GjY70Ul7b2iopSEAgRq1EIaMrHVxoyy5JT_eSd-w
 
 ###
 
 ## Получить список избранных предложений
 
-GET http://localhost:3000/favorites/64f5dd45cd1bc981b87cab78 HTTP/1.1
+GET http://localhost:3000/favorites HTTP/1.1
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJwYXlsb2FkIjp7ImVtYWlsIjoiY2FAa2UuY24iLCJpZCI6IjY1MDA1NDk1YTkzMjBhZmZkOGQxMDdiYiJ9LCJpYXQiOjE2OTQ1MjQwMTIsImV4cCI6MTY5NTEyODgxMn0.ON_GjY70Ul7b2iopSEAgRq1EIaMrHVxoyy5JT_eSd-w
 
 ###

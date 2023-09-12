@@ -15,6 +15,7 @@ import ConfigService from '../../../core/config/config.service.js';
 import LoginUserDto from '../dto/login-user.dto.js';
 import { ValidateDtoMiddleware } from '../../../core/middlewares/validate-dto.middleware.js';
 import { JWT_ALGORITHM } from '../constants/user.constants.js';
+import { ValidateObjectIdMiddleware } from '../../../core/middlewares/validate-objectid.middleware.js';
 
 type ParamsUserDetail =
   | {
@@ -40,11 +41,13 @@ export default class UserController extends ControllerAbstract {
       path: '/profile/:id',
       method: HttpMethod.Get,
       handler: this.getProfile,
+      middlewares: [new ValidateObjectIdMiddleware('id')],
     });
     this.addRoute({
       path: '/profile/:id',
       method: HttpMethod.Patch,
       handler: this.updateProfile,
+      middlewares: [new ValidateObjectIdMiddleware('id')],
     });
     this.addRoute({
       path: '/register',
@@ -56,6 +59,7 @@ export default class UserController extends ControllerAbstract {
       path: '/login',
       method: HttpMethod.Post,
       handler: this.login,
+      middlewares: [new ValidateDtoMiddleware(LoginUserDto)],
     });
     this.addRoute({
       path: '/login',
@@ -70,19 +74,11 @@ export default class UserController extends ControllerAbstract {
   }
 
   public async getProfile(
-    { params }: Request<ParamsUserDetail, Record<string, unknown>>,
+    { params }: Request<ParamsUserDetail>,
     res: Response
   ): Promise<void> {
     const { id } = params;
     const user = await this.userService.findById(id);
-
-    if (!user) {
-      throw new HttpError(
-        StatusCodes.NOT_FOUND,
-        'User not found',
-        'UserController'
-      );
-    }
     const userToResponse = fillDto(UserRdo, user);
     this.ok(res, userToResponse);
   }

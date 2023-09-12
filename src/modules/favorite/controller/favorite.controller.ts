@@ -8,10 +8,11 @@ import { FavoriteServiceInterface } from '../services/favorite-services.interfac
 import { ParamsDictionary } from 'express-serve-static-core';
 import { fillDto } from '../../../core/helpers/common.js';
 import OfferRdo from '../../../modules/offer/rdo/offer.rdo.js';
+import { PrivateRouteMiddleware } from '../../../core/middlewares/private-route.middleware.js';
+import { ValidateObjectIdMiddleware } from '../../../core/middlewares/validate-objectid.middleware.js';
 
 type RequestParams =
   | {
-      userId: string;
       offerId: string;
     }
   | ParamsDictionary;
@@ -29,26 +30,42 @@ export default class FavoriteController extends ControllerAbstract {
     this.logger.info('Register favorite routes');
 
     this.addRoute({
-      path: '/:userId',
+      path: '/',
       method: HttpMethod.Get,
       handler: this.getFavorites,
+      middlewares: [new PrivateRouteMiddleware()],
     });
 
     this.addRoute({
-      path: '/',
+      path: '/:offerId',
       method: HttpMethod.Post,
-      handler: this.add,
+      handler: this.addToFavorites,
+      middlewares: [
+        new PrivateRouteMiddleware(),
+        new ValidateObjectIdMiddleware('offerId'),
+      ],
     });
 
     this.addRoute({
-      path: '/:offerId/:userId',
+      path: '/:offerId',
       method: HttpMethod.Delete,
-      handler: this.delete,
+      handler: this.removeFromFavorites,
+      middlewares: [
+        new PrivateRouteMiddleware(),
+        new ValidateObjectIdMiddleware('offerId'),
+      ],
     });
   }
 
-  public async add({ body }: Request, res: Response): Promise<void> {
-    const favorite = await this.favoriteServices.add(body.offer, body.user);
+  public async addToFavorites(
+    { params: { offerId } }: Request<RequestParams>,
+    res: Response
+  ): Promise<void> {
+    const userId = res.locals.user.id;
+    const favorite = await this.favoriteServices.addToFavorites(
+      offerId,
+      userId
+    );
     const favoriteToResponse = {
       ...fillDto(OfferRdo, favorite.offer),
       isFavorite: true,
@@ -56,25 +73,30 @@ export default class FavoriteController extends ControllerAbstract {
     this.created(res, favoriteToResponse);
   }
 
-  public async delete(
+  public async removeFromFavorites(
     { params }: Request<RequestParams>,
     res: Response
   ): Promise<void> {
-    const { offerId, userId } = params;
-    const offer = await this.favoriteServices.delete(offerId, userId);
+    const user = res.locals.user.id;
+    const { offerId } = params;
+    const favorite = await this.favoriteServices.removeFromFavorites(
+      offerId,
+      user
+    );
+
     const favoriteToResponse = {
-      ...fillDto(OfferRdo, offer),
+      ...fillDto(OfferRdo, favorite),
       isFavorite: false,
     };
     this.ok(res, favoriteToResponse);
   }
 
   public async getFavorites(
-    { params }: Request<RequestParams>,
+    _req: Request<RequestParams>,
     res: Response
   ): Promise<void> {
-    const { userId } = params;
-    const favorites = await this.favoriteServices.find(userId);
+    const user = res.locals.user.id;
+    const favorites = await this.favoriteServices.findFavorites(user);
     const favoritesToResponse = favorites.map((item) => ({
       ...fillDto(OfferRdo, item.offer),
       isFavorite: true,

@@ -31,6 +31,6 @@ export default class HttpExceptionFilter implements ExceptionFilterInterface {
 
     res
       .status(StatusCodes.BAD_REQUEST)
-      .json(createErrorObject(ServiceError.CommonError, error.message));
+      .json(createErrorObject(ServiceError.ServiceError, error.message));
   }
 }

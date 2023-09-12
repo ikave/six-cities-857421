@@ -16,6 +16,7 @@ import { ValidateObjectIdMiddleware } from '../../../core/middlewares/validate-o
 import { DocumentExistsMiddleware } from '../../../core/middlewares/document-exists.middleware.js';
 import { ValidateDtoMiddleware } from '../../../core/middlewares/validate-dto.middleware.js';
 import UpdateOfferDto from '../dto/update-offer.dto.js';
+import { DocumentCanEditedMiddleware } from '../../../core/middlewares/document-can-edited.middleware.js';
 
 type OffersParams =
   | {
@@ -42,6 +43,12 @@ export default class OfferController extends ControllerAbstract {
       path: '/',
       method: HttpMethod.Get,
       handler: this.getOffers,
+    });
+
+    this.addRoute({
+      path: '/premium',
+      method: HttpMethod.Get,
+      handler: this.getPremiumOffers,
     });
 
     this.addRoute({
@@ -73,6 +80,7 @@ export default class OfferController extends ControllerAbstract {
         new ValidateObjectIdMiddleware('offerId'),
         new ValidateDtoMiddleware(UpdateOfferDto),
         new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
+        new DocumentCanEditedMiddleware(this.offerService, 'Offer', 'offerId'),
       ],
     });
 
@@ -88,8 +96,16 @@ export default class OfferController extends ControllerAbstract {
     });
   }
 
-  public async getOffers(_req: Request, res: Response): Promise<void> {
-    const offers = await this.offerService.find();
+  public async getOffers(req: Request, res: Response): Promise<void> {
+    const { city } = req.query;
+    const offers = await this.offerService.find(city as string);
+    const offersToResponse = fillDto(OfferRdo, offers);
+    this.ok(res, offersToResponse);
+  }
+
+  public async getPremiumOffers(req: Request, res: Response): Promise<void> {
+    const { city } = req.query;
+    const offers = await this.offerService.findPremium(city as string);
     const offersToResponse = fillDto(OfferRdo, offers);
     this.ok(res, offersToResponse);
   }
@@ -104,7 +120,11 @@ export default class OfferController extends ControllerAbstract {
     >,
     res: Response
   ): Promise<void> {
-    const offer = await this.offerService.create(body);
+    const user = res.locals.user;
+    const offer = await this.offerService.create({
+      ...body,
+      owner: user.id,
+    });
     const offerToResponse = fillDto(OfferRdo, offer);
     this.created(res, offerToResponse);
   }

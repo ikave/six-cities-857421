@@ -16,37 +16,44 @@ export default class FavoriteServices implements FavoriteServiceInterface {
     private readonly favoriteModel: ModelType<FavoriteEntity>
   ) {}
 
-  public async add(
-    offer: string,
-    user: string
+  public async addToFavorites(
+    offerId: string,
+    userId: string
   ): Promise<DocumentType<FavoriteEntity>> {
-    let addedOffer = await this.favoriteModel.findOne({ offer, user }).exec();
+    let addedOffer = await this.favoriteModel
+      .findOne({ offer: offerId, user: userId })
+      .populate({ path: 'offer', populate: ['owner'] })
+      .exec();
 
     if (!addedOffer) {
-      addedOffer = await this.favoriteModel.create({
-        offer,
-        user,
-      });
-      this.logger.info(`Offer added to favorites: ${user}`);
+      addedOffer = await (
+        await this.favoriteModel.create({
+          offer: offerId,
+          user: userId,
+        })
+      ).populate({ path: 'offer', populate: ['owner'] });
+      this.logger.info(`Offer added to favorites: ${userId}`);
     }
 
     return addedOffer;
   }
 
-  public async delete(
+  public async removeFromFavorites(
     offerId: string,
     userId: string
   ): Promise<DocumentType<FavoriteEntity> | null> {
     return await this.favoriteModel
       .findOneAndDelete({ offer: offerId, user: userId })
-      .populate({ path: 'offer', populate: ['owner', 'city'] })
+      .populate({ path: 'offer', populate: ['owner'] })
       .exec();
   }
 
-  public async find(userId: string): Promise<DocumentType<FavoriteEntity>[]> {
+  public async findFavorites(
+    userId: string
+  ): Promise<DocumentType<FavoriteEntity>[]> {
     return await this.favoriteModel
       .find({ user: userId })
-      .populate({ path: 'offer', populate: ['owner', 'city'] })
+      .populate({ path: 'offer', populate: ['owner'] })
       .sort({ createdAt: SortType.Down })
       .exec();
   }

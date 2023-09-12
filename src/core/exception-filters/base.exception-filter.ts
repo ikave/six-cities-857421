@@ -26,6 +26,6 @@ export default class BaseExceptionFilter implements ExceptionFilterInterface {
 
     res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .json(createErrorObject(ServiceError.ServiceError, error.message));
+      .json(createErrorObject(ServiceError.CommonError, error.message));
   }
 }
