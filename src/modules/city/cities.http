@@ -1,0 +1,14 @@
+# Действия с городами
+## Получить список городов
+
+GET http://localhost:3000/cities HTTP/1.1
+Content-Type: application/json
+
+###
+
+## Получить список городов
+
+GET http://localhost:3000/cities/?cityName=Paris HTTP/1.1
+Content-Type: application/json
+
+###
