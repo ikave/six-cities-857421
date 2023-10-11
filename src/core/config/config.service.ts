@@ -32,4 +32,8 @@ export default class ConfigService implements ConfigInterface<RestSchema> {
   public get<T extends keyof RestSchema>(key: T): RestSchema[T] {
     return this.config[key];
   }
+
+  public getPath(): string {
+    return `${this.get('SERVER_HOST')}:${this.get('PORT')}`;
+  }
 }
