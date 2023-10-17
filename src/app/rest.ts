@@ -1,4 +1,5 @@
 import express, { Express } from 'express';
+import cors from 'cors';
 import { inject, injectable } from 'inversify';
 import { ConfigInterface } from '../core/config/config.interface.js';
 import { RestSchema } from '../core/config/rest.schema.js';
@@ -29,6 +30,8 @@ export default class RestApplication {
     private readonly commentController: ControllerInterface,
     @inject(AppComponent.FavoriteController)
     private readonly favoriteController: ControllerInterface,
+    @inject(AppComponent.CityController)
+    private readonly cityController: ControllerInterface,
     @inject(AppComponent.BaseExceptionFilter)
     private readonly baseExceptionFilter: ExceptionFilterInterface,
     @inject(AppComponent.ValidationExceptionFilter)
@@ -64,6 +67,7 @@ export default class RestApplication {
     this.app.use('/offers', this.offerController.router);
     this.app.use('/comments', this.commentController.router);
     this.app.use('/favorites', this.favoriteController.router);
+    this.app.use('/cities', this.cityController.router);
     this.logger.info('Controller initialization complete');
   }
 
@@ -73,6 +77,16 @@ export default class RestApplication {
 
     const authMiddleware = new AuthMiddleware(this.config.get('JWT_SECRET'));
     this.app.use(authMiddleware.execute.bind(authMiddleware));
+
+    this.app.use(
+      '/upload',
+      express.static(this.config.get('UPLOAD_DIRECTORY'))
+    );
+    this.app.use(
+      '/static',
+      express.static(this.config.get('STATIC_DIRECTORY'))
+    );
+    this.app.use(cors());
     this.logger.info('Global middleware initialization completed');
   }
 

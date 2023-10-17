@@ -18,7 +18,7 @@ export const createJWT = async (
   jwtSecret: string,
   payload: object
 ): Promise<string> =>
-  new jose.SignJWT({ payload })
+  new jose.SignJWT({ ...payload })
     .setProtectedHeader({ alg: algorithm })
     .setIssuedAt()
     .setExpirationTime('7d')

@@ -26,9 +26,9 @@ export class AuthMiddleware implements MiddlewareInterface {
         createSecretKey(this.jwtSecret, 'utf-8')
       );
 
-      const { email, id } = payload.payload as { email: string; id: string };
+      const { id } = payload as { id: string };
 
-      res.locals.user = { email, id };
+      res.locals.user = { id };
 
       return next();
     } catch (error) {

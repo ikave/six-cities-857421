@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
 import { inject, injectable } from 'inversify';
-import { StatusCodes } from 'http-status-codes';
 import { ExceptionFilterInterface } from './exception-filter.interface.js';
 import { AppComponent } from '../../types/app-component.enum.js';
 import { LoggerInterface } from '../logger/logger.interface.js';
@@ -35,7 +34,7 @@ implements ExceptionFilterInterface {
     );
 
     res
-      .status(StatusCodes.BAD_REQUEST)
+      .status(error.httpStatusCode)
       .json(
         createErrorObject(
           ServiceError.ValidationError,

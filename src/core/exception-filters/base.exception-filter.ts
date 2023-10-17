@@ -22,7 +22,7 @@ export default class BaseExceptionFilter implements ExceptionFilterInterface {
     res: Response,
     _next: NextFunction
   ): void {
-    this.logger.error(`[BaseException]: ${error.message}`);
+    this.logger.error(`[BaseException]: ${error.stack}`);
 
     res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
