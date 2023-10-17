@@ -7,6 +7,7 @@ import { createUserContainer } from './modules/user/container/user.container.js'
 import { createOfferContainer } from './modules/offer/container/offer.container.js';
 import { createCommentContainer } from './modules/comment/container/comment.container.js';
 import { createFavoriteContainer } from './modules/favorite/container/favorite.container.js';
+import { createCityContainer } from './modules/city/container/city.container.js';
 
 async function bootstrap() {
   const container = Container.merge(
@@ -14,7 +15,8 @@ async function bootstrap() {
     createUserContainer(),
     createOfferContainer(),
     createCommentContainer(),
-    createFavoriteContainer()
+    createFavoriteContainer(),
+    createCityContainer()
   );
 
   const application = container.get<RestApplication>(

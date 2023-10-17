@@ -1,7 +1,7 @@
 import { inject, injectable } from 'inversify';
 import { DocumentType } from '@typegoose/typegoose';
 import { ModelType } from '@typegoose/typegoose/lib/types.js';
-import { FavoriteServiceInterface } from './favorite-services.interface.js';
+import { FavoriteServiceInterface } from './favorite-service.interface.js';
 import { AppComponent } from '../../../types/app-component.enum.js';
 import { LoggerInterface } from '../../../core/logger/logger.interface.js';
 import { FavoriteEntity } from '../entity/favorite.entity.js';
@@ -22,7 +22,7 @@ export default class FavoriteServices implements FavoriteServiceInterface {
   ): Promise<DocumentType<FavoriteEntity>> {
     let addedOffer = await this.favoriteModel
       .findOne({ offer: offerId, user: userId })
-      .populate({ path: 'offer', populate: ['owner'] })
+      .populate({ path: 'offer', populate: ['city', 'owner'] })
       .exec();
 
     if (!addedOffer) {
@@ -31,7 +31,7 @@ export default class FavoriteServices implements FavoriteServiceInterface {
           offer: offerId,
           user: userId,
         })
-      ).populate({ path: 'offer', populate: ['owner'] });
+      ).populate({ path: 'offer', populate: ['city', 'owner'] });
       this.logger.info(`Offer added to favorites: ${userId}`);
     }
 
@@ -44,7 +44,7 @@ export default class FavoriteServices implements FavoriteServiceInterface {
   ): Promise<DocumentType<FavoriteEntity> | null> {
     return await this.favoriteModel
       .findOneAndDelete({ offer: offerId, user: userId })
-      .populate({ path: 'offer', populate: ['owner'] })
+      .populate({ path: 'offer', populate: ['city', 'owner'] })
       .exec();
   }
 
@@ -53,12 +53,24 @@ export default class FavoriteServices implements FavoriteServiceInterface {
   ): Promise<DocumentType<FavoriteEntity>[]> {
     return await this.favoriteModel
       .find({ user: userId })
-      .populate({ path: 'offer', populate: ['owner'] })
+      .populate({ path: 'offer', populate: ['city', 'owner'] })
       .sort({ createdAt: SortType.Down })
       .exec();
   }
 
   public async deleteByOffer(offerId: string): Promise<void> {
     await this.favoriteModel.deleteMany({ offer: offerId }).exec();
+  }
+
+  public async checkIsFavorite(
+    offerId: string,
+    userId?: string
+  ): Promise<boolean> {
+    const result = await this.favoriteModel.findOne({
+      offer: offerId,
+      user: userId,
+    });
+
+    return !!result;
   }
 }

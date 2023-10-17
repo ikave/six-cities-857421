@@ -4,18 +4,14 @@ import { ControllerAbstract } from '../../../core/controller/controller.abstract
 import { AppComponent } from '../../../types/app-component.enum.js';
 import { LoggerInterface } from '../../../core/logger/logger.interface.js';
 import { HttpMethod } from '../../../types/http-method.enum.js';
-import { FavoriteServiceInterface } from '../services/favorite-services.interface.js';
+import { FavoriteServiceInterface } from '../services/favorite-service.interface.js';
 import { ParamsDictionary } from 'express-serve-static-core';
 import { fillDto } from '../../../core/helpers/common.js';
-import OfferRdo from '../../../modules/offer/rdo/offer.rdo.js';
-import { PrivateRouteMiddleware } from '../../../core/middlewares/private-route.middleware.js';
 import { ValidateObjectIdMiddleware } from '../../../core/middlewares/validate-objectid.middleware.js';
-
-type RequestParams =
-  | {
-      offerId: string;
-    }
-  | ParamsDictionary;
+import { DocumentExistsMiddleware } from '../../../core/middlewares/document-exists.middleware.js';
+import { OfferServiceInterface } from '../../../modules/offer/services/offer-service.interface.js';
+import OfferRdo from '../../offer/rdo/offer.rdo.js';
+import { PrivateRouteMiddleware } from '../../../core/middlewares/private-route.middleware.js';
 
 @injectable()
 export default class FavoriteController extends ControllerAbstract {
@@ -23,7 +19,9 @@ export default class FavoriteController extends ControllerAbstract {
     @inject(AppComponent.LoggerInterface)
     protected readonly logger: LoggerInterface,
     @inject(AppComponent.FavoriteServiceInterface)
-    private readonly favoriteServices: FavoriteServiceInterface
+    private readonly favoriteServices: FavoriteServiceInterface,
+    @inject(AppComponent.OfferServiceInterface)
+    private readonly offerService: OfferServiceInterface
   ) {
     super(logger);
 
@@ -43,6 +41,7 @@ export default class FavoriteController extends ControllerAbstract {
       middlewares: [
         new PrivateRouteMiddleware(),
         new ValidateObjectIdMiddleware('offerId'),
+        new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
       ],
     });
 
@@ -53,12 +52,13 @@ export default class FavoriteController extends ControllerAbstract {
       middlewares: [
         new PrivateRouteMiddleware(),
         new ValidateObjectIdMiddleware('offerId'),
+        new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
       ],
     });
   }
 
   public async addToFavorites(
-    { params: { offerId } }: Request<RequestParams>,
+    { params: { offerId } }: Request<ParamsDictionary>,
     res: Response
   ): Promise<void> {
     const userId = res.locals.user.id;
@@ -74,31 +74,33 @@ export default class FavoriteController extends ControllerAbstract {
   }
 
   public async removeFromFavorites(
-    { params }: Request<RequestParams>,
+    { params }: Request<ParamsDictionary>,
     res: Response
   ): Promise<void> {
-    const user = res.locals.user.id;
+    const userId = res.locals.user.id;
     const { offerId } = params;
     const favorite = await this.favoriteServices.removeFromFavorites(
       offerId,
-      user
+      userId
     );
 
-    const favoriteToResponse = {
-      ...fillDto(OfferRdo, favorite),
-      isFavorite: false,
-    };
-    this.ok(res, favoriteToResponse);
+    if (favorite) {
+      const favoriteToResponse = {
+        ...fillDto(OfferRdo, favorite.offer),
+        isFavorite: false,
+      };
+      this.ok(res, favoriteToResponse);
+    }
   }
 
   public async getFavorites(
-    _req: Request<RequestParams>,
+    _req: Request<ParamsDictionary>,
     res: Response
   ): Promise<void> {
     const user = res.locals.user.id;
     const favorites = await this.favoriteServices.findFavorites(user);
-    const favoritesToResponse = favorites.map((item) => ({
-      ...fillDto(OfferRdo, item.offer),
+    const favoritesToResponse = favorites.map((favorite) => ({
+      ...fillDto(OfferRdo, favorite.offer),
       isFavorite: true,
     }));
     this.ok(res, favoritesToResponse);

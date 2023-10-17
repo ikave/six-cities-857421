@@ -12,4 +12,5 @@ export interface FavoriteServiceInterface {
   ): Promise<DocumentType<FavoriteEntity> | null>;
   findFavorites(userId: string): Promise<DocumentType<FavoriteEntity>[]>;
   deleteByOffer(offerId: string): Promise<void>;
+  checkIsFavorite(offerId: string, userId: string): Promise<boolean>;
 }

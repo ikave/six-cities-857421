@@ -18,4 +18,7 @@ export enum AppComponent {
   BaseExceptionFilter = 'BaseExceptionFilter',
   ValidationExceptionFilter = 'ValidationExceptionFilter',
   HttpErrorExceptionFilter = 'HttpErrorExceptionFilter',
+  CityServiceInterface = 'CityServiceInterface',
+  CityModel = 'CityModel',
+  CityController = 'CityController',
 }
