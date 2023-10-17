@@ -6,7 +6,7 @@ import { LoggerInterface } from '../../../core/logger/logger.interface.js';
 import { CityServiceInterface } from '../services/city-service.interface.js';
 import { HttpMethod } from '../../../types/http-method.enum.js';
 import { fillDto } from '../../../core/helpers/common.js';
-import cityWithIdRdo from '../rdo/city-with-id.rdo.js';
+import CityRdo from '../rdo/city.rdo.js';
 
 export default class CityController extends ControllerAbstract {
   constructor(
@@ -28,7 +28,7 @@ export default class CityController extends ControllerAbstract {
 
   public async getCities(_req: Request, res: Response): Promise<void> {
     const cities = await this.cityService.find();
-    const citiesToResponce = fillDto(cityWithIdRdo, cities);
+    const citiesToResponce = fillDto(CityRdo, cities);
 
     this.ok(res, citiesToResponce);
   }

@@ -12,12 +12,13 @@ import { fillDto } from '../../../core/helpers/common.js';
 import CommentRdo from '../rdo/comment.rdo.js';
 import { OfferServiceInterface } from '../../../modules/offer/services/offer-service.interface.js';
 import HttpError from '../../../core/errors/http-error.js';
-
-type CommentParams =
-  | {
-      offerId: string;
-    }
-  | ParamsDictionary;
+import { DocumentExistsMiddleware } from '../../../core/middlewares/document-exists.middleware.js';
+import { ValidateDtoMiddleware } from '../../../core/middlewares/validate-dto.middleware.js';
+import { AuthMiddleware } from '../../../core/middlewares/auth.middleware.js';
+import ConfigService from '../../../core/config/config.service.js';
+import { updateRating } from '../../../core/helpers/offers.js';
+import { UnknownRecord } from '../../../types/unknown-record.js';
+import { ValidateObjectIdMiddleware } from '../../../core/middlewares/validate-objectid.middleware.js';
 
 @injectable()
 export default class CommentController extends ControllerAbstract {
@@ -27,7 +28,9 @@ export default class CommentController extends ControllerAbstract {
     @inject(AppComponent.CommentServiceInterface)
     private readonly commentService: CommentServiceInterface,
     @inject(AppComponent.OfferServiceInterface)
-    private readonly offerService: OfferServiceInterface
+    private readonly offerService: OfferServiceInterface,
+    @inject(AppComponent.ConfigInterface)
+    private readonly configService: ConfigService
   ) {
     super(logger);
 
@@ -35,12 +38,22 @@ export default class CommentController extends ControllerAbstract {
       path: '/:offerId',
       method: HttpMethod.Post,
       handler: this.addComment,
+      middlewares: [
+        new AuthMiddleware(this.configService.get('JWT_SECRET')),
+        new ValidateObjectIdMiddleware('offerId'),
+        new ValidateDtoMiddleware(CreateCommentDto),
+        new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
+      ],
     });
 
     this.addRoute({
       path: '/:offerId',
       method: HttpMethod.Get,
       handler: this.getComments,
+      middlewares: [
+        new ValidateObjectIdMiddleware('offerId'),
+        new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
+      ],
     });
   }
 
@@ -48,10 +61,11 @@ export default class CommentController extends ControllerAbstract {
     {
       body,
       params,
-    }: Request<CommentParams, Record<string, unknown>, CreateCommentDto>,
+    }: Request<ParamsDictionary, UnknownRecord, CreateCommentDto>,
     res: Response
   ): Promise<void> {
     const { offerId } = params;
+    const userId = res.locals.user.id;
 
     const offer = await this.offerService.findById(offerId);
 
@@ -67,17 +81,28 @@ export default class CommentController extends ControllerAbstract {
       ...body,
       date: new Date(),
       offer: offerId,
+      owner: userId,
     };
     const comment = await this.commentService.create(dto, offerId);
+    const updetedRating = updateRating(
+      offer.raiting,
+      offer.commentsCount,
+      comment.rating
+    );
+
+    await this.offerService.updateById(
+      {
+        raiting: updetedRating,
+      },
+      offerId
+    );
 
     const commentToResponse = fillDto(CommentRdo, comment);
     this.created(res, commentToResponse);
   }
 
   public async getComments(
-    {
-      params,
-    }: Request<CommentParams, Record<string, unknown>, CreateCommentDto>,
+    { params }: Request<ParamsDictionary, UnknownRecord, CreateCommentDto>,
     res: Response
   ): Promise<void> {
     const { offerId } = params;

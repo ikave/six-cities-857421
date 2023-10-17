@@ -1,4 +1,3 @@
-import { User } from '../../user/types/user.type.js';
 import { Coordinates } from '../../../types/coordinates.type.js';
 import { Equipment } from '../types/equipment.enum.js';
 import { HouseType } from '../types/house-type.enum.js';
@@ -9,10 +8,9 @@ import {
   ArrayUnique,
   IsArray,
   IsBoolean,
-  IsDateString,
   IsEnum,
   IsInt,
-  IsMongoId,
+  IsOptional,
   IsString,
   IsUrl,
   Max,
@@ -33,6 +31,7 @@ import {
 } from '../constants/offer.constants.js';
 
 export default class CreateOfferDto {
+  @IsOptional()
   @IsString()
   @MinLength(OFFER_TITLE_LENGTH.Min, {
     message: `Minimum length of the title must be a ${OFFER_TITLE_LENGTH.Min} chars`,
@@ -42,6 +41,7 @@ export default class CreateOfferDto {
   })
   public title?: string;
 
+  @IsOptional()
   @IsString()
   @MinLength(OFFER_DESCRIPTION_LENGTH.Min, {
     message: `Minimum length of the description must be a ${OFFER_DESCRIPTION_LENGTH.Min} chars`,
@@ -51,15 +51,15 @@ export default class CreateOfferDto {
   })
   public description?: string;
 
-  @IsDateString({}, { message: 'The date must be a valid ISO date' })
-  public date?: Date;
-
+  @IsOptional()
   @ValidateNested()
   public city?: City;
 
+  @IsOptional()
   @IsUrl({}, { message: 'Preview image must be a valid URL string' })
   public preview?: string;
 
+  @IsOptional()
   @IsArray()
   @ArrayMinSize(OFFER_PICTURES_COUNT, {
     message: `The "pictures" field must contain ${OFFER_PICTURES_COUNT} files`,
@@ -70,12 +70,11 @@ export default class CreateOfferDto {
   @IsUrl({}, { each: true, message: 'The image must be a valid URL string' })
   public pictures?: string[];
 
+  @IsOptional()
   @IsBoolean()
   public isPremium?: boolean;
 
-  @IsBoolean()
-  public isFavorite?: boolean;
-
+  @IsOptional()
   @IsInt()
   @Min(OFFER_RATING.Min, {
     message: `The minimum rating value is ${OFFER_RATING.Min}`,
@@ -85,6 +84,7 @@ export default class CreateOfferDto {
   })
   public raiting?: number;
 
+  @IsOptional()
   @IsEnum(HouseType, {
     message: `The type of house must be only of the following: ${Object.keys(
       HouseType
@@ -92,6 +92,7 @@ export default class CreateOfferDto {
   })
   public houseType?: HouseType;
 
+  @IsOptional()
   @IsInt()
   @Min(OFFER_ROOMS.Min, {
     message: `The minimum number of room must be ${OFFER_ROOMS.Min}`,
@@ -101,6 +102,7 @@ export default class CreateOfferDto {
   })
   public rooms?: number;
 
+  @IsOptional()
   @IsInt()
   @Min(OFFER_GUESTS.Min, {
     message: `The minimum number of room must be ${OFFER_GUESTS.Min}`,
@@ -110,6 +112,7 @@ export default class CreateOfferDto {
   })
   public guests?: number;
 
+  @IsOptional()
   @IsInt()
   @Min(OFFER_PRICE.Min, {
     message: `The minimum number of room must be ${OFFER_PRICE.Min}`,
@@ -119,6 +122,7 @@ export default class CreateOfferDto {
   })
   public price?: number;
 
+  @IsOptional()
   @IsArray({ message: 'The "equipment" field must be Array' })
   @IsEnum(Equipment, {
     each: true,
@@ -131,13 +135,6 @@ export default class CreateOfferDto {
     message: `The field "equipment" must contain minimum ${OFFER_EQUIPMENT_COUNT.Min} items`,
   })
   public equipment?: Equipment[];
-
-  @IsMongoId({ message: 'Owner must be a valid id' })
-  public owner?: User;
-
-  @IsInt({ message: 'The field "commentsCount" must be integer' })
-  @Min(0, { message: 'Minimum value is zero' })
-  public commentsCount?: number;
 
   @ValidateNested()
   public coordinates?: Coordinates;

@@ -1,9 +1,9 @@
 import {
-  IsDateString,
   IsInt,
-  IsMongoId,
   IsString,
+  Max,
   MaxLength,
+  Min,
   MinLength,
 } from 'class-validator';
 import {
@@ -22,20 +22,11 @@ export default class CreateCommentDto {
   public comment!: string;
 
   @IsInt({ message: 'Rating is required' })
-  @MinLength(COMMENT_LENGTH.Min, {
+  @Min(COMMENT_RATING.Min, {
     message: `Rating min value is ${COMMENT_RATING.Min}`,
   })
-  @MaxLength(COMMENT_LENGTH.Max, {
+  @Max(COMMENT_RATING.Max, {
     message: `Rating max value is ${COMMENT_RATING.Max}`,
   })
   public rating!: number;
-
-  @IsDateString({}, { message: 'The date must be a valid ISO date' })
-  public date!: Date;
-
-  @IsMongoId({ message: 'Owner must be a valid id' })
-  public owner!: string;
-
-  @IsMongoId({ message: 'Offer must be a valid id' })
-  public offer!: string;
 }

@@ -27,7 +27,7 @@ export default class CommentService implements CommentServiceInterface {
     await this.offerService.incCommentCount(offerId);
 
     const result = (await this.commentModel.create(dto)).populate(['owner']);
-    this.logger.info(`New comment create ${dto.text}`);
+    this.logger.info(`New comment create ${dto.comment}`);
 
     return result;
   }

@@ -2,85 +2,84 @@
 
 ## Получить все предложения
 
-GET http://localhost:3000/offers?city=Paris HTTP/1.1
+GET http://localhost:5000/offers?cityName=Paris HTTP/1.1
 Content-Type: application/json
 
 ###
 
 ## Получить премиальные предложения
 
-GET http://localhost:3000/offers/premium?city=Paris HTTP/1.1
+GET http://localhost:5000/offers/premium?cityName=Amsterdam HTTP/1.1
 Content-Type: application/json
 
 ###
 
 ## Получить предложение по id
 
-GET http://localhost:3000/offers/65003da828e9139d34479c8b HTTP/1.1
+GET http://localhost:5000/offers/652e705bba48c4377b7491ca HTTP/1.1
 Content-Type: application/json
 
 ###
 
 ## Обновить предложение по id
 
-PATCH http://localhost:3000/offers/6500550d2aa0e0f2ddb409ec HTTP/1.1
+PATCH http://localhost:5000/offers/652e705bba48c4377b7491ca HTTP/1.1
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJwYXlsb2FkIjp7ImVtYWlsIjoiY2FAa2UuY24iLCJpZCI6IjY1MDA1NDk1YTkzMjBhZmZkOGQxMDdiYiJ9LCJpYXQiOjE2OTQ1MjA1NTUsImV4cCI6MTY5NTEyNTM1NX0.bkRvzRbJEDG9f3qcNYfGJmVSvhud_md4aDQeSmCbC2o
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjY1MmQwMmI2NjVlNDFjYzY1NWVmYzRhMSIsImlhdCI6MTY5NzU2MTU3NiwiZXhwIjoxNjk4MTY2Mzc2fQ.aokhYAwY2FboEqo8FxkkB_2ELardPNTFDHbqSWPjCUE
 
 {
-  "title": "Новое заголовок предложения"
+  "title": "Новый заголовок предложения",
+  "city": {
+    "name": "Paris"
+  }
 }
 
 ###
 
 ## Удалить предложение по id
 
-DELETE  http://localhost:3000/offers/64f5dd45cd1bc981b87cab80 HTTP/1.1
+DELETE  http://localhost:5000/offers/652e62a9fdf531e4ee4b375c HTTP/1.1
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJwYXlsb2FkIjp7ImVtYWlsIjoiYWVhQGtlLmNuIiwiaWQiOiI2NGZmMzAxMTk2NTAxODkzMmRhMzI0YzgifSwiaWF0IjoxNjk0NDQ1NjQwLCJleHAiOjE2OTUwNTA0NDB9.3iv5pwHjEtCIAkWmWTayhcHEgmcFSZ09b0WYUZIWZag
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjY1MmQwMmI2NjVlNDFjYzY1NWVmYzRhMSIsImlhdCI6MTY5NzQ0ODYzOCwiZXhwIjoxNjk4MDUzNDM4fQ.lBxVplWNjbzIUnyD3PC1nHJGki9FQhqcdbqiDyh2ux4
 
 ###
 
 ## Создать предложение
 
-POST http://localhost:3000/offers HTTP/1.1
+POST http://localhost:5000/offers HTTP/1.1
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJwYXlsb2FkIjp7ImVtYWlsIjoiY2FAa2UuY24iLCJpZCI6IjY1MDA1NDk1YTkzMjBhZmZkOGQxMDdiYiJ9LCJpYXQiOjE2OTQ1MjA1NTUsImV4cCI6MTY5NTEyNTM1NX0.bkRvzRbJEDG9f3qcNYfGJmVSvhud_md4aDQeSmCbC2o
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjY1MmQwMmI2NjVlNDFjYzY1NWVmYzRhMSIsImlhdCI6MTY5NzQ0ODYzOCwiZXhwIjoxNjk4MDUzNDM4fQ.lBxVplWNjbzIUnyD3PC1nHJGki9FQhqcdbqiDyh2ux4
 
 {
-  "title": "2-к. квартира, 55 м²",
+  "title": "Тестовое предложение об аренде №4",
   "description": "Новый, одно подъездный дом, обеспечен пассажирским и грузопассажирским лифтами с выходом в подземный паркинг.",
-  "date": "Fri Sep 01 2023 16:40:43 GMT+0300 (Москва, стандартное время)",
+  "date": "2023-04-13T02:41:57+03:00",
   "city": {
-    "name": "Paris",
-    "coordinates": {
-      "latitude": 48.85661,
-      "longitude": 2.351499
-    }
+    "name": "Paris"
   },
-  "preview": "http://pawof.bb/fa3.jpg",
+  "preview": "https://img2.akspic.ru/crops/2/2/8/8/98822/98822-pribrezhnyye_i_okeanicheskiye_relyefy-akva-ostrovok-karibskij_bassejn-more-1920x1080.jpg",
   "pictures": [
-      "http://pawof.bb/fa.jpg",
-      "http://pawof.bb/fa2.jpg",
-      "http://pawof.bb/fa3.jpg",
-      "http://pawof.bb/fa4.jpg",
-      "http://pawof.bb/fa5.jpg",
-      "http://pawof.bb/fa6.jpg"
+      "https://bipbap.ru/wp-content/uploads/2017/04/0_7c779_5df17311_orig.jpg",
+      "https://kartinki.cc/files/img/posts/18223/na-rabochii-stol-leto-more-9.webp",
+      "https://kartinki.cc/files/img/posts/18223/na-rabochii-stol-leto-more-18.webp",
+      "https://img1.akspic.ru/previews/1/1/8/0/70811/70811-laguna-karmannye_kompyutery-tropicheskaya_zona-otpusk-okean-x750.jpg",
+      "https://img2.akspic.ru/crops/5/2/7/8/68725/68725-otpusk-otel-plyazh-nebo-kurortnyj_gorod-4183x2430.jpg",
+      "https://img3.akspic.ru/crops/1/3/8/8/68831/68831-otpusk-plyazh-dosug-karibskij_bassejn-laguna-3202x2380.jpg"
   ],
   "isPremium": true,
-  "isFavorite": true,
-  "raiting": 2.2,
+  "isFavorite": false,
+  "raiting": 0,
   "houseType": "room",
   "rooms": 3,
   "guests": 2,
-  "price": 10497,
+  "price": 760,
   "equipment": [
       "Baby seat",
       "Washer",
       "Towels",
       "Fridge"
   ],
-  "commentsCount": 32,
+  "commentsCount": 0,
   "coordinates": {
       "latitude": 50.938361,
       "longitude": 6.959974

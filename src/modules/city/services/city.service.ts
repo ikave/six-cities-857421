@@ -40,7 +40,7 @@ export class CityService implements CityServiceInterface {
   public async findOrCreate(
     dto: CreateCityDto
   ): Promise<DocumentType<CityEntity>> {
-    const existCity = await this.cityModel.findOne(dto);
+    const existCity = await this.cityModel.findOne({ name: dto.name });
 
     return existCity ? existCity : this.create(dto);
   }

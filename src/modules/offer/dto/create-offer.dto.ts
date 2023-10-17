@@ -1,4 +1,3 @@
-import { User } from '../../user/types/user.type.js';
 import { Coordinates } from '../../../types/coordinates.type.js';
 import { Equipment } from '../types/equipment.enum.js';
 import { HouseType } from '../types/house-type.enum.js';
@@ -12,7 +11,6 @@ import {
   IsDateString,
   IsEnum,
   IsInt,
-  IsMongoId,
   IsString,
   IsUrl,
   Max,
@@ -26,11 +24,11 @@ import {
   OFFER_EQUIPMENT_COUNT,
   OFFER_GUESTS,
   OFFER_PRICE,
-  OFFER_RATING,
   OFFER_ROOMS,
   OFFER_PICTURES_COUNT,
   OFFER_TITLE_LENGTH,
 } from '../constants/offer.constants.js';
+import { User } from '../../../modules/user/types/user.type.js';
 
 export default class CreateOfferDto {
   @IsString()
@@ -76,15 +74,6 @@ export default class CreateOfferDto {
   @IsBoolean()
   public isFavorite!: boolean;
 
-  @IsInt()
-  @Min(OFFER_RATING.Min, {
-    message: `The minimum rating value is ${OFFER_RATING.Min}`,
-  })
-  @Max(OFFER_RATING.Max, {
-    message: `The maximum rating value is ${OFFER_RATING.Max}`,
-  })
-  public raiting!: number;
-
   @IsEnum(HouseType, {
     message: `The type of house must be only of the following: ${Object.keys(
       HouseType
@@ -97,25 +86,25 @@ export default class CreateOfferDto {
     message: `The minimum number of room must be ${OFFER_ROOMS.Min}`,
   })
   @Max(OFFER_ROOMS.Max, {
-    message: `The muximum number of room must be ${OFFER_ROOMS.Max}`,
+    message: `The maximum number of room must be ${OFFER_ROOMS.Max}`,
   })
   public rooms!: number;
 
   @IsInt()
   @Min(OFFER_GUESTS.Min, {
-    message: `The minimum number of room must be ${OFFER_GUESTS.Min}`,
+    message: `The minimum number of guests must be ${OFFER_GUESTS.Min}`,
   })
   @Max(OFFER_GUESTS.Max, {
-    message: `The muximum number of room must be ${OFFER_GUESTS.Max}`,
+    message: `The maximum number of guests must be ${OFFER_GUESTS.Max}`,
   })
   public guests!: number;
 
   @IsInt()
   @Min(OFFER_PRICE.Min, {
-    message: `The minimum number of room must be ${OFFER_PRICE.Min}`,
+    message: `Minimum cost must be ${OFFER_PRICE.Min}`,
   })
   @Max(OFFER_PRICE.Max, {
-    message: `The muximum number of room must be ${OFFER_PRICE.Max}`,
+    message: `Maximum cost must be ${OFFER_PRICE.Max}`,
   })
   public price!: number;
 
@@ -132,7 +121,6 @@ export default class CreateOfferDto {
   })
   public equipment!: Equipment[];
 
-  @IsMongoId({ message: 'Owner must be a valid id' })
   public owner!: User;
 
   @IsInt({ message: 'The field "commentsCount" must be integer' })

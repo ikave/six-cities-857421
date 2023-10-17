@@ -6,7 +6,7 @@ export default class CommentRdo {
   public id!: string;
 
   @Expose()
-  public text!: string;
+  public comment!: string;
 
   @Expose()
   public date!: string;

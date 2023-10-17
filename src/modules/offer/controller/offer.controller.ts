@@ -9,7 +9,6 @@ import { HttpMethod } from '../../../types/http-method.enum.js';
 import CreateOfferDto from '../dto/create-offer.dto.js';
 import { fillDto } from '../../../core/helpers/common.js';
 import OfferRdo from '../rdo/offer.rdo.js';
-import OfferDetailRdo from '../rdo/offer-detail.rdo.js';
 import { CommentServiceInterface } from '../../../modules/comment/services/comment-service.interface.js';
 import { PrivateRouteMiddleware } from '../../../core/middlewares/private-route.middleware.js';
 import { ValidateObjectIdMiddleware } from '../../../core/middlewares/validate-objectid.middleware.js';
@@ -17,13 +16,9 @@ import { DocumentExistsMiddleware } from '../../../core/middlewares/document-exi
 import { ValidateDtoMiddleware } from '../../../core/middlewares/validate-dto.middleware.js';
 import UpdateOfferDto from '../dto/update-offer.dto.js';
 import { DocumentCanEditedMiddleware } from '../../../core/middlewares/document-can-edited.middleware.js';
-
-type OffersParams =
-  | {
-      cityId: string;
-      offerId: string;
-    }
-  | ParamsDictionary;
+import { CityService } from '../../../modules/city/services/city.service.js';
+import FavoriteServices from '../../favorite/services/favorite.service.js';
+import { UnknownRecord } from 'src/types/unknown-record.js';
 
 @injectable()
 export default class OfferController extends ControllerAbstract {
@@ -33,7 +28,11 @@ export default class OfferController extends ControllerAbstract {
     @inject(AppComponent.OfferServiceInterface)
     private readonly offerService: OfferServiceInterface,
     @inject(AppComponent.CommentServiceInterface)
-    private readonly commentService: CommentServiceInterface
+    private readonly commentService: CommentServiceInterface,
+    @inject(AppComponent.CityServiceInterface)
+    private readonly cityService: CityService,
+    @inject(AppComponent.FavoriteServiceInterface)
+    private readonly favoriteService: FavoriteServices
   ) {
     super(logger);
 
@@ -92,75 +91,106 @@ export default class OfferController extends ControllerAbstract {
         new PrivateRouteMiddleware(),
         new ValidateObjectIdMiddleware('offerId'),
         new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
+        new DocumentCanEditedMiddleware(this.offerService, 'Offer', 'offerId'),
       ],
     });
   }
 
-  public async getOffers(req: Request, res: Response): Promise<void> {
-    const { city } = req.query;
-    const offers = await this.offerService.find(city as string);
+  public async getOffers({ query }: Request, res: Response): Promise<void> {
+    const user = res.locals.user;
+    const { cityName } = query;
+
+    const city = await this.cityService.findByName(cityName as string);
+    const offers = await this.offerService.find(city?.id);
+
+    if (user) {
+      for (const offer of offers) {
+        offer.isFavorite = await this.favoriteService.checkIsFavorite(
+          offer.id,
+          user.id
+        );
+      }
+    }
+
     const offersToResponse = fillDto(OfferRdo, offers);
     this.ok(res, offersToResponse);
   }
 
-  public async getPremiumOffers(req: Request, res: Response): Promise<void> {
-    const { city } = req.query;
-    const offers = await this.offerService.findPremium(city as string);
+  public async getPremiumOffers(
+    { query }: Request,
+    res: Response
+  ): Promise<void> {
+    const { cityName } = query;
+    const city = await this.cityService.findByName(cityName as string);
+    const offers = await this.offerService.findPremium(city?.id);
     const offersToResponse = fillDto(OfferRdo, offers);
     this.ok(res, offersToResponse);
   }
 
   public async createOffer(
-    {
-      body,
-    }: Request<
-      Record<string, unknown>,
-      Record<string, unknown>,
-      CreateOfferDto
-    >,
+    { body }: Request<UnknownRecord, UnknownRecord, CreateOfferDto>,
     res: Response
   ): Promise<void> {
     const user = res.locals.user;
-    const offer = await this.offerService.create({
-      ...body,
-      owner: user.id,
-    });
-    const offerToResponse = fillDto(OfferRdo, offer);
-    this.created(res, offerToResponse);
+
+    const city = await this.cityService.findByName(body.city.name);
+
+    if (city) {
+      const offer = await this.offerService.create({
+        ...body,
+        owner: user.id,
+        city: city.id,
+      });
+      const offerToResponse = fillDto(OfferRdo, offer);
+      this.created(res, offerToResponse);
+    }
   }
 
   public async getOffer(
-    { params }: Request<OffersParams, Record<string, unknown>>,
+    { params }: Request<ParamsDictionary>,
     res: Response
   ): Promise<void> {
     const { offerId } = params;
-    const offer = await this.offerService.findById(offerId);
-
-    const offerToResponse = fillDto(OfferDetailRdo, offer);
+    const userId = res.locals.user ? res.locals.user.id : '';
+    const offer = await this.offerService.findById(offerId, userId);
+    const offerToResponse = fillDto(OfferRdo, offer);
     this.ok(res, offerToResponse);
   }
 
   public async updateOffer(
-    {
-      params,
-      body,
-    }: Request<OffersParams, Record<string, unknown>, CreateOfferDto>,
+    { params, body }: Request<ParamsDictionary, UnknownRecord, CreateOfferDto>,
     res: Response
   ): Promise<void> {
     const { offerId } = params;
-    const offer = await this.offerService.updateById(body, offerId);
+    const userId = res.locals.user.id;
+    const city = await this.cityService.findByName(body.city.name);
+    const isFavorite = await this.favoriteService.checkIsFavorite(
+      offerId,
+      userId
+    );
+    const offer = await this.offerService.updateById(
+      { ...body, city: city?.id },
+      offerId
+    );
+
+    if (offer) {
+      offer.isFavorite = isFavorite;
+    }
+
     const offerToResponse = fillDto(OfferRdo, offer);
     this.ok(res, offerToResponse);
   }
 
   public async deleteOffer(
-    { params }: Request<OffersParams, Record<string, unknown>>,
+    { params }: Request<ParamsDictionary>,
     res: Response
   ): Promise<void> {
     const { offerId } = params;
     const offer = await this.offerService.deleteById(offerId);
+    await this.favoriteService.deleteByOffer(offerId);
     await this.commentService.deleteByOffer(offerId);
 
-    this.noContent(res, offer);
+    const offerToResponse = fillDto(OfferRdo, offer);
+    this.ok(res, offerToResponse);
   }
 }
