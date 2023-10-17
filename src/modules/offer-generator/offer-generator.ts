@@ -12,7 +12,7 @@ import { HouseType } from '../offer/types/house-type.enum.js';
 import { User } from '../user/types/user.type.js';
 import { OfferGeneratorInterface } from './offer-generator.interface.js';
 import { MockData } from '../../types/mock-data.type.js';
-import { City } from '../offer/types/city.type.js';
+import { City } from '../city/types/city.type.js';
 
 const FIRST_WEEK_DAY = 1;
 const LAST_WEEK_DAY = 7;
