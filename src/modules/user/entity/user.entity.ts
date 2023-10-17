@@ -22,15 +22,13 @@ export class UserEntity extends TimeStamps implements User {
   public name: string;
 
   @prop({
-    type: String,
     unique: true,
     required: true,
-    match: [/^([\w-\\.]+@([\w-]+\.)+[\w-]{2,4})?$/, 'Email is incorrect'],
   })
   public email: string;
 
   @prop({ required: false, default: '' })
-  public avatar: string;
+  public avatar!: string;
 
   @prop({
     type: String,
@@ -50,7 +48,6 @@ export class UserEntity extends TimeStamps implements User {
 
     this.name = userData.name;
     this.email = userData.email;
-    this.avatar = userData.avatar;
     this.type = userData.type;
   }
 

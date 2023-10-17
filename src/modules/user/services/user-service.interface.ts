@@ -20,4 +20,5 @@ export interface UserServiceInterface {
     dto: LoginUserDto,
     salt: string
   ): Promise<DocumentType<UserEntity> | null>;
+  exists(id: string): Promise<boolean>;
 }

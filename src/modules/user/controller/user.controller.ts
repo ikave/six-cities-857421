@@ -16,6 +16,9 @@ import LoginUserDto from '../dto/login-user.dto.js';
 import { ValidateDtoMiddleware } from '../../../core/middlewares/validate-dto.middleware.js';
 import { JWT_ALGORITHM } from '../constants/user.constants.js';
 import { ValidateObjectIdMiddleware } from '../../../core/middlewares/validate-objectid.middleware.js';
+import { UserExistsMiddleware } from '../../../core/middlewares/user-exists.middleware.js';
+import { UploadFileMiddleware } from '../../../core/middlewares/upload-file.middleware.js';
+// import { PrivateRouteMiddleware } from '../../../core/middlewares/private-route.middleware.js';
 
 type ParamsUserDetail =
   | {
@@ -47,7 +50,14 @@ export default class UserController extends ControllerAbstract {
       path: '/profile/:id',
       method: HttpMethod.Patch,
       handler: this.updateProfile,
-      middlewares: [new ValidateObjectIdMiddleware('id')],
+      middlewares: [
+        new ValidateObjectIdMiddleware('id'),
+        // new PrivateRouteMiddleware(),
+        new UploadFileMiddleware(
+          this.configService.get('UPLOAD_DIRECTORY'),
+          'avatar'
+        ),
+      ],
     });
     this.addRoute({
       path: '/register',
@@ -65,6 +75,7 @@ export default class UserController extends ControllerAbstract {
       path: '/login',
       method: HttpMethod.Get,
       handler: this.checkAuth,
+      middlewares: [new UserExistsMiddleware(this.userService)],
     });
     this.addRoute({
       path: '/logout',
@@ -84,13 +95,15 @@ export default class UserController extends ControllerAbstract {
   }
 
   public async register(
-    {
-      body,
-    }: Request<Record<string, unknown>, Record<string, unknown>, CreateUserDto>,
+    req: Request<
+      Record<string, unknown>,
+      Record<string, unknown>,
+      CreateUserDto
+    >,
     res: Response
   ): Promise<void> {
+    const { body } = req;
     const existUser = await this.userService.findByEmail(body.email);
-    console.log(existUser);
 
     if (existUser) {
       throw new HttpError(
@@ -129,7 +142,7 @@ export default class UserController extends ControllerAbstract {
     const token = await createJWT(
       JWT_ALGORITHM,
       this.configService.get('JWT_SECRET'),
-      { email: user.email, id: user.id }
+      { id: user.id }
     );
 
     this.ok(res, {
@@ -139,11 +152,22 @@ export default class UserController extends ControllerAbstract {
   }
 
   public logout(_req: Request, res: Response): void {
-    this.ok(res, 'Logout is success');
+    this.noContent(res, 'Logout is success');
   }
 
-  public updateProfile(_req: Request, res: Response): void {
-    this.ok(res, 'Updated Profile');
+  public async updateProfile(
+    { params, file }: Request,
+    res: Response
+  ): Promise<void> {
+    const userId = params.id;
+
+    if (file) {
+      const filePath = file.filename;
+      const updated = await this.userService.update(userId, {
+        avatar: filePath,
+      });
+      this.ok(res, fillDto(UserRdo, updated));
+    }
   }
 
   public async checkAuth(_req: Request, res: Response): Promise<void> {
@@ -155,9 +179,9 @@ export default class UserController extends ControllerAbstract {
       );
     }
 
-    const { email } = res.locals.user;
+    const { id } = res.locals.user;
 
-    const foundedUser = await this.userService.findByEmail(email);
+    const foundedUser = await this.userService.findById(id);
 
     this.ok(res, fillDto(UserRdo, foundedUser));
   }
