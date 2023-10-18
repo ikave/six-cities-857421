@@ -14,11 +14,10 @@ import { OfferServiceInterface } from '../../../modules/offer/services/offer-ser
 import HttpError from '../../../core/errors/http-error.js';
 import { DocumentExistsMiddleware } from '../../../core/middlewares/document-exists.middleware.js';
 import { ValidateDtoMiddleware } from '../../../core/middlewares/validate-dto.middleware.js';
-import { AuthMiddleware } from '../../../core/middlewares/auth.middleware.js';
-import ConfigService from '../../../core/config/config.service.js';
 import { updateRating } from '../../../core/helpers/offers.js';
 import { UnknownRecord } from '../../../types/unknown-record.js';
 import { ValidateObjectIdMiddleware } from '../../../core/middlewares/validate-objectid.middleware.js';
+import { PrivateRouteMiddleware } from '../../../core/middlewares/private-route.middleware.js';
 
 @injectable()
 export default class CommentController extends ControllerAbstract {
@@ -28,9 +27,7 @@ export default class CommentController extends ControllerAbstract {
     @inject(AppComponent.CommentServiceInterface)
     private readonly commentService: CommentServiceInterface,
     @inject(AppComponent.OfferServiceInterface)
-    private readonly offerService: OfferServiceInterface,
-    @inject(AppComponent.ConfigInterface)
-    private readonly configService: ConfigService
+    private readonly offerService: OfferServiceInterface
   ) {
     super(logger);
 
@@ -39,7 +36,7 @@ export default class CommentController extends ControllerAbstract {
       method: HttpMethod.Post,
       handler: this.addComment,
       middlewares: [
-        new AuthMiddleware(this.configService.get('JWT_SECRET')),
+        new PrivateRouteMiddleware(),
         new ValidateObjectIdMiddleware('offerId'),
         new ValidateDtoMiddleware(CreateCommentDto),
         new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
@@ -65,7 +62,7 @@ export default class CommentController extends ControllerAbstract {
     res: Response
   ): Promise<void> {
     const { offerId } = params;
-    const userId = res.locals.user.id;
+    const { id } = res.locals.user;
 
     const offer = await this.offerService.findById(offerId);
 
@@ -81,7 +78,7 @@ export default class CommentController extends ControllerAbstract {
       ...body,
       date: new Date(),
       offer: offerId,
-      owner: userId,
+      owner: id,
     };
     const comment = await this.commentService.create(dto, offerId);
     const updetedRating = updateRating(

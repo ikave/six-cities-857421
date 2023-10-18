@@ -1,9 +1,9 @@
 # Действия с комментариями
 ## Создание комментария
 
-POST http://localhost:3000/comments/651d629106b516166d592487 HTTP/1.1
+POST http://localhost:5000/comments/652cf61fdb625c5df1b3b8db HTTP/1.1
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjY1MDg1YjU3Y2U5ZjJhMzE2MjY3MzAzZiIsImlhdCI6MTY5NjQwNjk0MywiZXhwIjoxNjk3MDExNzQzfQ.ODsgWperPWwEmrpOEbMQfbGX48IXrGp21mTW-NLUXkY
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjY1MmQwMmI2NjVlNDFjYzY1NWVmYzRhMSIsImlhdCI6MTY5NzYxMDM2MywiZXhwIjoxNjk4MjE1MTYzfQ.69Q9FN75fU16IKIY3vkvriFOOd5OEGEj1wFWXA6rEbs
 
 {
   "comment": "Новый комментарий 2",
@@ -14,7 +14,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjY1MDg1YjU3Y2U5ZjJhMzE2MjY3M
 
 ## Получить все комментарии к предложению
 
-GET http://localhost:3000/comments/651d629106b516166d592487 HTTP/1.1
+GET http://localhost:5000/comments/652cf61fdb625c5df1b3b8db HTTP/1.1
 Content-Type: application/json
 
 ###
