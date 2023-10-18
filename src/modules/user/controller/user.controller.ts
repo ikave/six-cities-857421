@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import { inject, injectable } from 'inversify';
-import { ParamsDictionary } from 'express-serve-static-core';
 import { StatusCodes } from 'http-status-codes';
 import { ControllerAbstract } from '../../../core/controller/controller.abstract.js';
 import { LoggerInterface } from '../../../core/logger/logger.interface.js';
@@ -18,13 +17,8 @@ import { JWT_ALGORITHM } from '../constants/user.constants.js';
 import { ValidateObjectIdMiddleware } from '../../../core/middlewares/validate-objectid.middleware.js';
 import { UserExistsMiddleware } from '../../../core/middlewares/user-exists.middleware.js';
 import { UploadFileMiddleware } from '../../../core/middlewares/upload-file.middleware.js';
-// import { PrivateRouteMiddleware } from '../../../core/middlewares/private-route.middleware.js';
-
-type ParamsUserDetail =
-  | {
-      id: string;
-    }
-  | ParamsDictionary;
+import { PrivateRouteMiddleware } from '../../../core/middlewares/private-route.middleware.js';
+import { UnknownRecord } from '../../../types/unknown-record.js';
 
 @injectable()
 export default class UserController extends ControllerAbstract {
@@ -52,7 +46,7 @@ export default class UserController extends ControllerAbstract {
       handler: this.updateProfile,
       middlewares: [
         new ValidateObjectIdMiddleware('id'),
-        // new PrivateRouteMiddleware(),
+        new PrivateRouteMiddleware(),
         new UploadFileMiddleware(
           this.configService.get('UPLOAD_DIRECTORY'),
           'avatar'
@@ -84,10 +78,7 @@ export default class UserController extends ControllerAbstract {
     });
   }
 
-  public async getProfile(
-    { params }: Request<ParamsUserDetail>,
-    res: Response
-  ): Promise<void> {
+  public async getProfile({ params }: Request, res: Response): Promise<void> {
     const { id } = params;
     const user = await this.userService.findById(id);
     const userToResponse = fillDto(UserRdo, user);
@@ -95,11 +86,7 @@ export default class UserController extends ControllerAbstract {
   }
 
   public async register(
-    req: Request<
-      Record<string, unknown>,
-      Record<string, unknown>,
-      CreateUserDto
-    >,
+    req: Request<UnknownRecord, UnknownRecord, CreateUserDto>,
     res: Response
   ): Promise<void> {
     const { body } = req;
@@ -121,9 +108,7 @@ export default class UserController extends ControllerAbstract {
   }
 
   public async login(
-    {
-      body,
-    }: Request<Record<string, unknown>, Record<string, unknown>, LoginUserDto>,
+    { body }: Request<UnknownRecord, UnknownRecord, LoginUserDto>,
     res: Response
   ): Promise<void> {
     const user = await this.userService.verifyUser(
