@@ -18,7 +18,7 @@ import UpdateOfferDto from '../dto/update-offer.dto.js';
 import { DocumentCanEditedMiddleware } from '../../../core/middlewares/document-can-edited.middleware.js';
 import { CityService } from '../../../modules/city/services/city.service.js';
 import FavoriteServices from '../../favorite/services/favorite.service.js';
-import { UnknownRecord } from 'src/types/unknown-record.js';
+import { UnknownRecord } from '../../../types/unknown-record.js';
 
 @injectable()
 export default class OfferController extends ControllerAbstract {
@@ -146,10 +146,7 @@ export default class OfferController extends ControllerAbstract {
     }
   }
 
-  public async getOffer(
-    { params }: Request<ParamsDictionary>,
-    res: Response
-  ): Promise<void> {
+  public async getOffer({ params }: Request, res: Response): Promise<void> {
     const { offerId } = params;
     const userId = res.locals.user ? res.locals.user.id : '';
     const offer = await this.offerService.findById(offerId, userId);
@@ -168,23 +165,20 @@ export default class OfferController extends ControllerAbstract {
       offerId,
       userId
     );
-    const offer = await this.offerService.updateById(
+    const updatedOffer = await this.offerService.updateById(
       { ...body, city: city?.id },
       offerId
     );
 
-    if (offer) {
-      offer.isFavorite = isFavorite;
+    if (updatedOffer) {
+      updatedOffer.isFavorite = isFavorite;
     }
 
-    const offerToResponse = fillDto(OfferRdo, offer);
+    const offerToResponse = fillDto(OfferRdo, updatedOffer);
     this.ok(res, offerToResponse);
   }
 
-  public async deleteOffer(
-    { params }: Request<ParamsDictionary>,
-    res: Response
-  ): Promise<void> {
+  public async deleteOffer({ params }: Request, res: Response): Promise<void> {
     const { offerId } = params;
     const offer = await this.offerService.deleteById(offerId);
     await this.favoriteService.deleteByOffer(offerId);
