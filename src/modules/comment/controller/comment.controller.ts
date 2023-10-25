@@ -87,7 +87,7 @@ export default class CommentController extends ControllerAbstract {
       comment.rating
     );
 
-    await this.offerService.updateById(
+    await this.offerService.updateRating(
       {
         raiting: updetedRating,
       },

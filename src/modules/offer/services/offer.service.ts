@@ -7,12 +7,10 @@ import { OfferServiceInterface } from './offer-service.interface.js';
 import { AppComponent } from '../../../types/app-component.enum.js';
 import { LoggerInterface } from '../../../core/logger/logger.interface.js';
 import UpdateOfferDto from '../dto/update-offer.dto.js';
-import {
-  OFFER_COUNT_MAX,
-  PREMIUM_OFFER_COUNT,
-} from '../constants/offer.constants.js';
+import { Offer } from '../constants/offer.constants.js';
 import { SortType } from '../../../types/sort-type.enum.js';
 import FavoriteServices from '../../favorite/services/favorite.service.js';
+import UpdateRatingDto from '../dto/update-rating.dto.js';
 
 @injectable()
 export default class OfferService implements OfferServiceInterface {
@@ -47,6 +45,18 @@ export default class OfferService implements OfferServiceInterface {
       .exec();
   }
 
+  public async updateRating(
+    rating: UpdateRatingDto,
+    offerId: string
+  ): Promise<DocumentType<OfferEntity> | null> {
+    return await this.offerModel
+      .findByIdAndUpdate(offerId, rating, {
+        new: true,
+      })
+      .populate(['owner', 'city'])
+      .exec();
+  }
+
   public async deleteById(
     offerId: string
   ): Promise<DocumentType<OfferEntity> | null> {
@@ -59,7 +69,7 @@ export default class OfferService implements OfferServiceInterface {
   public async find(cityId: string): Promise<DocumentType<OfferEntity>[]> {
     return await this.offerModel
       .find({ city: new ObjectId(cityId) })
-      .limit(OFFER_COUNT_MAX)
+      .limit(Offer.COUNT_MAX)
       .sort({ createdAt: SortType.Down })
       .populate(['owner', 'city'])
       .exec();
@@ -70,7 +80,7 @@ export default class OfferService implements OfferServiceInterface {
   ): Promise<DocumentType<OfferEntity>[]> {
     return await this.offerModel
       .find({ city: new ObjectId(cityId), isPremium: true })
-      .limit(PREMIUM_OFFER_COUNT)
+      .limit(Offer.PREMIUM_COUNT_MAX)
       .sort({ createdAt: SortType.Down })
       .populate(['owner', 'city'])
       .exec();

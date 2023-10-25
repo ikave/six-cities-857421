@@ -1,37 +1,18 @@
-export const PREMIUM_OFFER_COUNT = 3;
-export const OFFER_COUNT_MAX = 60;
-export const OFFER_TITLE_LENGTH = {
-  Min: 10,
-  Max: 100,
-};
-
-export const OFFER_DESCRIPTION_LENGTH = {
-  Min: 20,
-  Max: 1024,
-};
-
-export const OFFER_PICTURES_COUNT = 6;
-
-export const OFFER_RATING = {
-  Min: 1,
-  Max: 5,
-};
-
-export const OFFER_ROOMS = {
-  Min: 1,
-  Max: 8,
-};
-
-export const OFFER_GUESTS = {
-  Min: 1,
-  Max: 10,
-};
-
-export const OFFER_PRICE = {
-  Min: 100,
-  Max: 100000,
-};
-
-export const OFFER_EQUIPMENT_COUNT = {
-  Min: 1,
-};
+export const Offer = {
+  PREMIUM_COUNT_MAX: 3,
+  COUNT_MAX: 60,
+  TITLE_LENGTH_MIN: 10,
+  TITLE_LENGTH_MAX: 100,
+  DESCRIPTION_LENGTH_MIN: 20,
+  DESCRIPTION_LENGTH_MAX: 1024,
+  PICTURES_COUNT: 6,
+  RATING_MIN: 1,
+  RATING_MAX: 5,
+  ROOMS_MIN: 1,
+  ROOMS_MAX: 8,
+  GUESTS_MIN: 1,
+  GUESTS_MAX: 10,
+  PRICE_MIN: 100,
+  PRICE_MAX: 100000,
+  EQUIPMENT_COUNT_MIN: 1,
+} as const;

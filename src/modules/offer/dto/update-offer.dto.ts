@@ -19,35 +19,26 @@ import {
   MinLength,
   ValidateNested,
 } from 'class-validator';
-import {
-  OFFER_DESCRIPTION_LENGTH,
-  OFFER_EQUIPMENT_COUNT,
-  OFFER_GUESTS,
-  OFFER_PRICE,
-  OFFER_RATING,
-  OFFER_ROOMS,
-  OFFER_PICTURES_COUNT,
-  OFFER_TITLE_LENGTH,
-} from '../constants/offer.constants.js';
+import { Offer } from '../constants/offer.constants.js';
 
 export default class CreateOfferDto {
   @IsOptional()
   @IsString()
-  @MinLength(OFFER_TITLE_LENGTH.Min, {
-    message: `Minimum length of the title must be a ${OFFER_TITLE_LENGTH.Min} chars`,
+  @MinLength(Offer.TITLE_LENGTH_MIN, {
+    message: `Minimum length of the title must be a ${Offer.TITLE_LENGTH_MIN} chars`,
   })
-  @MaxLength(OFFER_TITLE_LENGTH.Max, {
-    message: `Maximum length of the title must be a ${OFFER_TITLE_LENGTH.Max} chars`,
+  @MaxLength(Offer.TITLE_LENGTH_MAX, {
+    message: `Maximum length of the title must be a ${Offer.TITLE_LENGTH_MAX} chars`,
   })
   public title?: string;
 
   @IsOptional()
   @IsString()
-  @MinLength(OFFER_DESCRIPTION_LENGTH.Min, {
-    message: `Minimum length of the description must be a ${OFFER_DESCRIPTION_LENGTH.Min} chars`,
+  @MinLength(Offer.DESCRIPTION_LENGTH_MIN, {
+    message: `Minimum length of the description must be a ${Offer.DESCRIPTION_LENGTH_MIN} chars`,
   })
-  @MaxLength(OFFER_DESCRIPTION_LENGTH.Max, {
-    message: `Maximum length of the description must be a ${OFFER_DESCRIPTION_LENGTH.Max} chars`,
+  @MaxLength(Offer.DESCRIPTION_LENGTH_MAX, {
+    message: `Maximum length of the description must be a ${Offer.DESCRIPTION_LENGTH_MAX} chars`,
   })
   public description?: string;
 
@@ -61,11 +52,11 @@ export default class CreateOfferDto {
 
   @IsOptional()
   @IsArray()
-  @ArrayMinSize(OFFER_PICTURES_COUNT, {
-    message: `The "pictures" field must contain ${OFFER_PICTURES_COUNT} files`,
+  @ArrayMinSize(Offer.PICTURES_COUNT, {
+    message: `The "pictures" field must contain ${Offer.PICTURES_COUNT} files`,
   })
-  @ArrayMaxSize(OFFER_PICTURES_COUNT, {
-    message: `The "pictures" field must contain ${OFFER_PICTURES_COUNT} files`,
+  @ArrayMaxSize(Offer.PICTURES_COUNT, {
+    message: `The "pictures" field must contain ${Offer.PICTURES_COUNT} files`,
   })
   @IsUrl({}, { each: true, message: 'The image must be a valid URL string' })
   public pictures?: string[];
@@ -73,16 +64,6 @@ export default class CreateOfferDto {
   @IsOptional()
   @IsBoolean()
   public isPremium?: boolean;
-
-  @IsOptional()
-  @IsInt()
-  @Min(OFFER_RATING.Min, {
-    message: `The minimum rating value is ${OFFER_RATING.Min}`,
-  })
-  @Max(OFFER_RATING.Max, {
-    message: `The maximum rating value is ${OFFER_RATING.Max}`,
-  })
-  public raiting?: number;
 
   @IsOptional()
   @IsEnum(HouseType, {
@@ -94,31 +75,31 @@ export default class CreateOfferDto {
 
   @IsOptional()
   @IsInt()
-  @Min(OFFER_ROOMS.Min, {
-    message: `The minimum number of room must be ${OFFER_ROOMS.Min}`,
+  @Min(Offer.ROOMS_MIN, {
+    message: `The minimum number of room must be ${Offer.ROOMS_MIN}`,
   })
-  @Max(OFFER_ROOMS.Max, {
-    message: `The muximum number of room must be ${OFFER_ROOMS.Max}`,
+  @Max(Offer.ROOMS_MAX, {
+    message: `The maximum number of room must be ${Offer.ROOMS_MAX}`,
   })
   public rooms?: number;
 
   @IsOptional()
   @IsInt()
-  @Min(OFFER_GUESTS.Min, {
-    message: `The minimum number of room must be ${OFFER_GUESTS.Min}`,
+  @Min(Offer.GUESTS_MIN, {
+    message: `The minimum number of guests must be ${Offer.GUESTS_MIN}`,
   })
-  @Max(OFFER_GUESTS.Max, {
-    message: `The muximum number of room must be ${OFFER_GUESTS.Max}`,
+  @Max(Offer.GUESTS_MAX, {
+    message: `The maximum number of guests must be ${Offer.GUESTS_MAX}`,
   })
   public guests?: number;
 
   @IsOptional()
   @IsInt()
-  @Min(OFFER_PRICE.Min, {
-    message: `The minimum number of room must be ${OFFER_PRICE.Min}`,
+  @Min(Offer.PRICE_MIN, {
+    message: `Minimum cost must be ${Offer.PRICE_MIN}`,
   })
-  @Max(OFFER_PRICE.Max, {
-    message: `The muximum number of room must be ${OFFER_PRICE.Max}`,
+  @Max(Offer.PRICE_MAX, {
+    message: `Maximum cost must be ${Offer.PRICE_MAX}`,
   })
   public price?: number;
 
@@ -131,8 +112,8 @@ export default class CreateOfferDto {
     ).join(', ')}`,
   })
   @ArrayUnique({ message: 'All items in field "equipment" must be unique' })
-  @ArrayMinSize(OFFER_EQUIPMENT_COUNT.Min, {
-    message: `The field "equipment" must contain minimum ${OFFER_EQUIPMENT_COUNT.Min} items`,
+  @ArrayMinSize(Offer.EQUIPMENT_COUNT_MIN, {
+    message: `The field "equipment" must contain minimum ${Offer.EQUIPMENT_COUNT_MIN} items`,
   })
   public equipment?: Equipment[];
 
