@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { inject, injectable } from 'inversify';
 import { ParamsDictionary } from 'express-serve-static-core';
+import { StatusCodes } from 'http-status-codes';
 import { ControllerAbstract } from '../../../core/controller/controller.abstract.js';
 import { AppComponent } from '../../../types/app-component.enum.js';
 import { LoggerInterface } from '../../../core/logger/logger.interface.js';
@@ -19,6 +20,7 @@ import { DocumentCanEditedMiddleware } from '../../../core/middlewares/document-
 import { CityService } from '../../../modules/city/services/city.service.js';
 import FavoriteServices from '../../favorite/services/favorite.service.js';
 import { UnknownRecord } from '../../../types/unknown-record.js';
+import HttpError from '../../../core/errors/http-error.js';
 
 @injectable()
 export default class OfferController extends ControllerAbstract {
@@ -101,7 +103,16 @@ export default class OfferController extends ControllerAbstract {
     const { cityName } = query;
 
     const city = await this.cityService.findByName(cityName as string);
-    const offers = await this.offerService.find(city?.id);
+
+    if (!city) {
+      throw new HttpError(
+        StatusCodes.BAD_REQUEST,
+        'Unknown city',
+        'OfferController'
+      );
+    }
+
+    const offers = await this.offerService.find(city.id);
 
     if (user) {
       for (const offer of offers) {
@@ -122,7 +133,16 @@ export default class OfferController extends ControllerAbstract {
   ): Promise<void> {
     const { cityName } = query;
     const city = await this.cityService.findByName(cityName as string);
-    const offers = await this.offerService.findPremium(city?.id);
+
+    if (!city) {
+      throw new HttpError(
+        StatusCodes.BAD_REQUEST,
+        'Unknown city',
+        'OfferController'
+      );
+    }
+
+    const offers = await this.offerService.findPremium(city.id);
     const offersToResponse = fillDto(OfferRdo, offers);
     this.ok(res, offersToResponse);
   }
@@ -134,6 +154,14 @@ export default class OfferController extends ControllerAbstract {
     const user = res.locals.user;
 
     const city = await this.cityService.findByName(body.city.name);
+
+    if (!city) {
+      throw new HttpError(
+        StatusCodes.BAD_REQUEST,
+        'Unknown city',
+        'OfferController'
+      );
+    }
 
     if (city) {
       const offer = await this.offerService.create({
@@ -161,12 +189,21 @@ export default class OfferController extends ControllerAbstract {
     const { offerId } = params;
     const userId = res.locals.user.id;
     const city = await this.cityService.findByName(body.city.name);
+
+    if (!city) {
+      throw new HttpError(
+        StatusCodes.BAD_REQUEST,
+        'Unknown city',
+        'OfferController'
+      );
+    }
+
     const isFavorite = await this.favoriteService.checkIsFavorite(
       offerId,
       userId
     );
     const updatedOffer = await this.offerService.updateById(
-      { ...body, city: city?.id },
+      { ...body, city: city.id },
       offerId
     );
 
