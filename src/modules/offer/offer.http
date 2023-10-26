@@ -48,7 +48,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjY1MmQwMmI2NjVlNDFjYzY1NWVmY
 
 POST http://localhost:5000/offers HTTP/1.1
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjY1MmQwMmI2NjVlNDFjYzY1NWVmYzRhMSIsImlhdCI6MTY5NzQ0ODYzOCwiZXhwIjoxNjk4MDUzNDM4fQ.lBxVplWNjbzIUnyD3PC1nHJGki9FQhqcdbqiDyh2ux4
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjY1MmQwMmI2NjVlNDFjYzY1NWVmYzRhMSIsImlhdCI6MTY5ODMxOTEyMywiZXhwIjoxNjk4OTIzOTIzfQ.xBZghkPdZUdRIn521wzkCX1sPCWpAdr23ARh7qhT2l4
 
 {
   "title": "Тестовое предложение об аренде №4",

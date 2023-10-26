@@ -41,12 +41,12 @@ export default class UserController extends ControllerAbstract {
       middlewares: [new ValidateObjectIdMiddleware('id')],
     });
     this.addRoute({
-      path: '/profile/:id',
+      path: '/profile',
       method: HttpMethod.Patch,
       handler: this.updateProfile,
       middlewares: [
-        new ValidateObjectIdMiddleware('id'),
         new PrivateRouteMiddleware(),
+        new UserExistsMiddleware(this.userService),
         new UploadFileMiddleware(
           this.configService.get('UPLOAD_DIRECTORY'),
           'avatar'
@@ -140,19 +140,22 @@ export default class UserController extends ControllerAbstract {
     this.noContent(res, 'Logout is success');
   }
 
-  public async updateProfile(
-    { params, file }: Request,
-    res: Response
-  ): Promise<void> {
-    const userId = params.id;
+  public async updateProfile({ file }: Request, res: Response): Promise<void> {
+    const user = res.locals.user;
 
-    if (file) {
-      const filePath = file.filename;
-      const updated = await this.userService.update(userId, {
-        avatar: filePath,
-      });
-      this.ok(res, fillDto(UserRdo, updated));
+    if (!file) {
+      throw new HttpError(
+        StatusCodes.BAD_REQUEST,
+        'Image file is required',
+        'UploadFileMiddleware'
+      );
     }
+
+    const filePath = file.filename;
+    const updated = await this.userService.update(user.id, {
+      avatar: filePath,
+    });
+    this.ok(res, fillDto(UserRdo, updated));
   }
 
   public async checkAuth(_req: Request, res: Response): Promise<void> {

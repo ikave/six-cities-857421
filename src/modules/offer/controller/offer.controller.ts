@@ -81,7 +81,12 @@ export default class OfferController extends ControllerAbstract {
         new ValidateObjectIdMiddleware('offerId'),
         new ValidateDtoMiddleware(UpdateOfferDto),
         new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
-        new DocumentCanEditedMiddleware(this.offerService, 'Offer', 'offerId'),
+        new DocumentCanEditedMiddleware(
+          this.offerService,
+          'Offer',
+          'offerId',
+          'edit'
+        ),
       ],
     });
 
@@ -93,7 +98,12 @@ export default class OfferController extends ControllerAbstract {
         new PrivateRouteMiddleware(),
         new ValidateObjectIdMiddleware('offerId'),
         new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
-        new DocumentCanEditedMiddleware(this.offerService, 'Offer', 'offerId'),
+        new DocumentCanEditedMiddleware(
+          this.offerService,
+          'Offer',
+          'offerId',
+          'delete'
+        ),
       ],
     });
   }

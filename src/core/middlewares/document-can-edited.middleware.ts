@@ -8,7 +8,8 @@ export class DocumentCanEditedMiddleware implements MiddlewareInterface {
   constructor(
     private readonly service: DocumentCanEditedInterface,
     private readonly entityName: string,
-    private readonly paramName: string
+    private readonly paramName: string,
+    private readonly actionMessage: string
   ) {}
 
   public async execute(
@@ -22,7 +23,7 @@ export class DocumentCanEditedMiddleware implements MiddlewareInterface {
     if (!(await this.service.checkOwner(offerId, userId))) {
       throw new HttpError(
         StatusCodes.FORBIDDEN,
-        `You cannot edit this ${this.entityName}!`,
+        `You cannot ${this.actionMessage} this ${this.entityName}!`,
         'DocumentCanEditedMiddleware'
       );
     }
