@@ -73,6 +73,7 @@ export default class RestApplication {
 
   private async _initMiddleware() {
     this.logger.info('Global middleware initialization...');
+    this.app.use(cors());
     this.app.use(express.json());
 
     const authMiddleware = new AuthMiddleware(this.config.get('JWT_SECRET'));
@@ -86,7 +87,6 @@ export default class RestApplication {
       '/static',
       express.static(this.config.get('STATIC_DIRECTORY'))
     );
-    this.app.use(cors());
     this.logger.info('Global middleware initialization completed');
   }
 
