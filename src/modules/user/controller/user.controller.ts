@@ -118,8 +118,8 @@ export default class UserController extends ControllerAbstract {
 
     if (!user) {
       throw new HttpError(
-        StatusCodes.UNAUTHORIZED,
-        `User with email ${body.email} not found.`,
+        StatusCodes.BAD_REQUEST,
+        'Email or password is incorrect',
         'UserController'
       );
     }
