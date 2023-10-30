@@ -1,0 +1,18 @@
+export const Offer = {
+  PremiumCountMax: 3,
+  CountMax: 60,
+  TitleLengthMin: 10,
+  TitleLengthMax: 100,
+  DescriptionLengthMin: 20,
+  DescriptionLengthMax: 1024,
+  PicturesCount: 6,
+  RatingMin: 1,
+  RatingMax: 5,
+  RoomsMin: 1,
+  RoomsMax: 8,
+  GuestsMin: 1,
+  GuestsMax: 10,
+  PriceMin: 100,
+  PriceMax: 1000000,
+  EquipmentCountMin: 1,
+} as const;

@@ -23,10 +23,9 @@ export const transformCityObjectToString = ({
 const getEquipment = (equipments: string[]): Equipment[] =>
   equipments.map((equipment) => equipment as Equipment);
 
-const getOwner = ([name, email, avatar, type]: string[]): User => ({
+const getOwner = ([name, email, type]: string[]): User => ({
   name,
   email,
-  avatar,
   type: type as UserType,
 });
 
@@ -34,6 +33,17 @@ const getCoordinates = ([latitude, longitude]: string[]): Coordinates => ({
   latitude: Number.parseFloat(latitude),
   longitude: Number.parseFloat(longitude),
 });
+
+export const updateRating = (
+  currentRating: number,
+  commentCount: number,
+  userRating: number
+): number =>
+  Number(
+    ((currentRating * commentCount + userRating) / (commentCount + 1)).toFixed(
+      2
+    )
+  );
 
 export function createOffer(offerData: string): Offer {
   const [

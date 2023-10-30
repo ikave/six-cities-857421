@@ -27,6 +27,12 @@ export class CityService implements CityServiceInterface {
     return await this.cityModel.findById(cityId).exec();
   }
 
+  public async findByName(
+    cityName: string
+  ): Promise<DocumentType<CityEntity> | null> {
+    return await this.cityModel.findOne({ name: cityName }).exec();
+  }
+
   public async find(): Promise<DocumentType<CityEntity>[]> {
     return await this.cityModel.find().exec();
   }
@@ -34,7 +40,7 @@ export class CityService implements CityServiceInterface {
   public async findOrCreate(
     dto: CreateCityDto
   ): Promise<DocumentType<CityEntity>> {
-    const existCity = await this.cityModel.findOne(dto);
+    const existCity = await this.cityModel.findOne({ name: dto.name });
 
     return existCity ? existCity : this.create(dto);
   }

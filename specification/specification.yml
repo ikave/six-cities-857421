@@ -1,9 +1,9 @@
-openapi: '3.0.2'
+openapi: '3.0.3'
 info:
   title: Six cities API
   version: '1.0'
 servers:
-  - url: http://localhost:3000
+  - url: http://localhost:5000
 tags:
   - name: User
     description: Действия с пользователями
@@ -11,12 +11,12 @@ tags:
     description: Действия с предложениями
   - name: Comments
     description: Действия с комментариями
-  - name: Premiums
-    description: Действия с премиальными предложениями
+  - name: Cities
+    description: Действия с городами
   - name: Favorites
     description: Действия с избранными предложениями
 paths:
-  /user/register:
+  /users/register:
     post:
       security: []
       tags:
@@ -30,16 +30,16 @@ paths:
               $ref: '#/components/schemas/Signup'
         required: true
       responses:
-        '201':
+        201:
           description: Успешное создание пользователя
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
-        '409':
+        409:
           description: Пользователь с таким email уже существует.
 
-  /user/login:
+  /users/login:
     post:
       security: []
       tags:
@@ -53,28 +53,22 @@ paths:
               $ref: '#/components/schemas/Signin'
         required: true
       responses:
-        '200':
+        200:
           description: Успешная авторизация
-          headers:
-            X-Token:
-              description: Токен авторизации
-              schema:
-                type: string
-                example: a33davxb36au3b31
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
-        '400':
+                $ref: '#/components/schemas/SuccessLogin'
+        400:
           description: Неверный логин или пароль.
 
-  /user/logout:
+  /users/logout:
     delete:
       tags:
         - User
       summary: Завершение авторизации
       responses:
-        '200':
+        204:
           description: Успешное завершение авторизации
         default:
           description: Неизвестная ошибка
@@ -83,42 +77,73 @@ paths:
               schema:
                 $ref: '#/components/schemas/DefaultError'
 
-  /user/profile:
+  /users/profile:
     get:
       tags:
         - User
       summary: Получение данных о пользователе
       responses:
-        '200':
+        200:
           description: Успешное получение данных пользователя
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
+        401:
+          description: Пользователь не авторизован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthError'
+        404:
+          description: Пользователь не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundError'
         default:
           description: Неизвестная ошибка
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/DefaultError'
-
     patch:
       tags:
         - User
-      summary: Редактирование профиля
+      summary: Редактирование аватара профиля
       requestBody:
         description: Данные для обновления профиля пользователя
+        required: true
         content:
-          application/json:
+          multipart/form-data:
             schema:
-              $ref: '#/components/schemas/Signup'
+              type: object
+              properties:
+                avatar:
+                  type: string
+                  format: base64
+            encoding:
+              avatar:
+                contentType: image/jpg, image/jpeg, image/png
       responses:
-        '200':
-          description: Успешное редактирование профиля пользователя
+        200:
+          description: Успешное редактирование аватара пользователя
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
+        401:
+          description: Пользователь не авторизован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthError'
+        400:
+          description: Неверный формат файла
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
 
   /offers:
     get:
@@ -127,8 +152,10 @@ paths:
         - Offers
       summary: Получение списка предложений
       description: Не более 60 предложений
+      parameters:
+        - $ref: '#/components/parameters/CityName'
       responses:
-        '200':
+        200:
           description: Успешное получение списка предложений
           content:
             application/json:
@@ -137,6 +164,12 @@ paths:
                 items:
                   $ref: '#/components/schemas/Offer'
                 maxLength: 60
+        400:
+          description: Неизвестный город
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
         default:
           description: Неизвестная ошибка
           content:
@@ -155,13 +188,13 @@ paths:
               $ref: '#/components/schemas/NewOffer'
         required: true
       responses:
-        '201':
+        200:
           description: Предложение создано
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Offer'
-        '401':
+        401:
           description: Пользователь не авторизован
           content:
             application/json:
@@ -181,15 +214,10 @@ paths:
         - Offers
       summary: Получение предложения по id
       parameters:
-        - name: offerId
-          in: path
-          description: Идентификатор предложения
-          schema:
-            type: string
-          required: true
+        - $ref: '#/components/parameters/OfferId'
       responses:
-        '200':
-          description: '200'
+        200:
+          description: Список предложений
           content:
             application/json:
               schema:
@@ -206,20 +234,15 @@ paths:
         - Offers
       summary: Редактирование предложения
       parameters:
-        - name: offerId
-          in: path
-          description: Идентификатор предложения
-          schema:
-            type: string
-          required: true
+        - $ref: '#/components/parameters/OfferId'
       requestBody:
         description: Измененные данные
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Offer'
+              $ref: '#/components/schemas/NewOffer'
       responses:
-        '200':
+        200:
           description: Успешное редактирование
           content:
             application/json:
@@ -236,14 +259,9 @@ paths:
         - Offers
       summary: Удаление предложения
       parameters:
-        - name: offerId
-          in: path
-          description: Идентификатор предложения
-          schema:
-            type: string
-          required: true
+        - $ref: '#/components/parameters/OfferId'
       responses:
-        '200':
+        200:
           description: Успешное удаление предложения
         default:
           description: Неизвестная ошибка
@@ -252,21 +270,58 @@ paths:
               schema:
                 $ref: '#/components/schemas/DefaultError'
 
-  /offers/{offerId}/comments:
+  /offers/premium:
+    get:
+      security: []
+      tags:
+        - Offers
+      summary: Получение списка премиальных предложений
+      description: Максимальное количество премиум предложений 3
+      parameters:
+        - $ref: '#/components/parameters/CityName'
+      responses:
+        200:
+          description: Успешное получение списка премиальных предложений
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Offer'
+                maxLength: 3
+        default:
+          description: Неизвестная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DefaultError'
+
+  /cities:
+    get:
+      security: []
+      tags:
+        - Cities
+      summary: Получение списка городов
+      responses:
+        200:
+          description: Успешное получение списка городов
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/City'
+
+  /comments/{offerId}:
     get:
       security: []
       tags:
         - Comments
       summary: Получение списка комментриев
       parameters:
-        - name: offerId
-          in: path
-          description: Идентификатор предложения
-          schema:
-            type: string
-          required: true
+        - $ref: '#/components/parameters/OfferId'
       responses:
-        '200':
+        200:
           description: Успешное получение списка комментариев
           content:
             application/json:
@@ -286,12 +341,7 @@ paths:
         - Comments
       summary: Добавление комментария
       parameters:
-        - name: offerId
-          in: path
-          description: Идентификатор предложения
-          schema:
-            type: string
-          required: true
+        - $ref: '#/components/parameters/OfferId'
       requestBody:
         description: Данные для добавления комментария
         content:
@@ -300,43 +350,12 @@ paths:
               $ref: '#/components/schemas/NewComment'
         required: true
       responses:
-        '200':
+        200:
           description: Успешное добавление комментария
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Comment'
-        default:
-          description: Неизвестная ошибка
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/DefaultError'
-
-  /premium/{cityName}:
-    get:
-      security: []
-      tags:
-        - Premiums
-      summary: Получение списка премиальных предложений
-      description: Максимальное количество премиум предложений 3
-      parameters:
-        - name: cityName
-          in: path
-          description: Название города
-          schema:
-            type: string
-          required: true
-      responses:
-        '200':
-          description: Успешное получение списка премиальных предложений
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Offer'
-                maxLength: 3
         default:
           description: Неизвестная ошибка
           content:
@@ -350,7 +369,7 @@ paths:
         - Favorites
       summary: Получение списка избранных предложений
       responses:
-        '200':
+        200:
           description: Успешное получение списка избранных предложений
           content:
             application/json:
@@ -364,27 +383,29 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/DefaultError'
-  /favorites/{offerId}/{status}:
+  /favorites/{offerId}:
     post:
       tags:
         - Favorites
-      summary: Добавление/Удаление предложения в/из избранное
+      summary: Добавление предложения в избранное
       parameters:
-        - name: offerId
-          in: path
-          description: Идентификатор предложения
-          schema:
-            type: string
-          required: true
-        - name: status
-          in: path
-          description: Статус избранного предложения
-          schema:
-            type: number
-            example: 1
-          required: true
+        - $ref: '#/components/parameters/OfferId'
       responses:
-        '200':
+        200:
+          description: Успешное добавление
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Offer'
+
+    delete:
+      tags:
+        - Favorites
+      summary: Удаление предложения из избранного
+      parameters:
+        - $ref: '#/components/parameters/OfferId'
+      responses:
+        200:
           description: Успешное добавление
           content:
             application/json:
@@ -392,41 +413,78 @@ paths:
                 $ref: '#/components/schemas/Offer'
 
 components:
+  parameters:
+    CityName:
+      name: cityName
+      in: query
+      description: Название города
+      schema:
+        type: string
+      required: true
+      example: Paris
+
+    OfferId:
+      name: offerId
+      in: path
+      description: Идентификатор предложения
+      schema:
+        type: string
+      required: true
+
   schemas:
     User:
       type: object
       properties:
         id:
-          type: string
-          example: 64e05bcc0517b8d356cd36f1
+          $ref: '#/components/schemas/UserId'
         name:
           type: string
           example: John
         email:
           type: string
-          example: John@post.me
+          example: john@post.me
         avatar:
           type: string
           example: http://se.mm/govtoho.jpg
         type:
           type: string
           enum:
-            - default
+            - regular
             - pro
+
+    UserId:
+      type: string
+      example: 64e05bcc0517b8d356cd36f1
+
+    SuccessLogin:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/User'
+        - $ref: '#/components/schemas/UserToken'
+
+    UserToken:
+      type: object
+      properties:
+        token:
+          type: string
+          example: eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjY1MmY4MWZhNDFlOGVmZGNmMmMwNzQ5ZSIsImlhdCI6MTY5ODQ4MDAyMiwiZXhwIjoxNjk5MDg0ODIyfQ.KMmO1-fnBFrpU8yfjCl--d0Dfn0qITBmFcwC9WeKVeg
 
     Signup:
       type: object
       properties:
         email:
           type: string
+          example: john@post.me
         name:
           type: string
+          example: John
         password:
           type: string
+          example: 1234qwer
         type:
           type: string
           enum:
-            - default
+            - regular
             - pro
 
     Signin:
@@ -434,8 +492,10 @@ components:
       properties:
         email:
           type: string
+          example: john@post.me
         password:
           type: string
+          example: 1234qwer
 
     Offer:
       type: object
@@ -445,6 +505,21 @@ components:
         id:
           type: string
           example: 64e05bcc0517b8d356cd36f1
+        isFavorite:
+          type: boolean
+          example: false
+        commentsCount:
+          type: number
+          example: 12
+        raiting:
+          type: number
+          example: 4
+        owner:
+          type: object
+          $ref: '#/components/schemas/User'
+        city:
+          type: object
+          $ref: '#/components/schemas/City'
 
     NewOffer:
       type: object
@@ -457,10 +532,13 @@ components:
           example: Санузел в керамогранитной плитке, там же установлена стиральная машинка.
         date:
           type: string
-          example: Sat Aug 19 2023 09:00:27 GMT+0300
+          example: 2023-12-04T07:22:40+03:00
         city:
           type: object
-          $ref: '#/components/schemas/City'
+          properties:
+            name:
+              type: string
+              $ref: '#/components/schemas/CityName'
         preview:
           type: string
           example: 'http://pawof.bb/fa.jpg'
@@ -470,24 +548,21 @@ components:
             type: string
             minLength: 6
             maxLength: 6
-            example: 'http://pawof.bb/fa.jpg'
+          example:
+            [
+              'http://pawof.bb/fa.jpg',
+              'http://pawof.bb/fa.jpg',
+              'http://pawof.bb/fa.jpg',
+              'http://pawof.bb/fa.jpg',
+              'http://pawof.bb/fa.jpg',
+              'http://pawof.bb/fa.jpg',
+            ]
         isPremium:
           type: boolean
-        isFavorite:
-          type: boolean
-        raiting:
-          type: number
-          minimum: 1
-          maximum: 5
-          example: 4.2
+          example: true
         houseType:
           type: string
-          enum:
-            - apartment
-            - house
-            - room
-            - hotel
-          example: house
+          $ref: '#/components/schemas/HouseType'
         rooms:
           type: number
           minimum: 1
@@ -505,27 +580,19 @@ components:
           example: 1209
         equipment:
           type: array
-          items:
-            type: string
-            enum:
-              - Breakfast
-              - Air conditioning
-              - Laptop friendly workspace
-              - Baby seat
-              - Washer
-              - Towels
-              - Fridge
-            example: Fridge
-        owner:
-          type: object
-          $ref: '#/components/schemas/User'
-
-        commentsCount:
-          type: number
-          example: 43
+          $ref: '#/components/schemas/Equipment'
         coordinates:
           type: object
           $ref: '#/components/schemas/Coordinates'
+
+    HouseType:
+      type: string
+      enum:
+        - apartment
+        - house
+        - room
+        - hotel
+      example: house
 
     Coordinates:
       type: object
@@ -537,19 +604,38 @@ components:
           type: number
           example: 4.351697
 
+    Equipment:
+      type: array
+      items:
+        type: string
+        enum:
+          - Breakfast
+          - Air conditioning
+          - Laptop friendly workspace
+          - Baby seat
+          - Washer
+          - Towels
+          - Fridge
+        minLength: 1
+        example: Fridge
+
+    CityName:
+      type: string
+      enum:
+        - Paris
+        - Cologne
+        - Brussels
+        - Amsterdam
+        - Hamburg
+        - Dusseldorf
+      example: Paris
+
     City:
       type: object
       properties:
         name:
           type: string
-          enum:
-            - Paris
-            - Cologne
-            - Brussels
-            - Amsterdam
-            - Hamburg
-            - Dusseldorf
-          example: Paris
+          $ref: '#/components/schemas/CityName'
         coordinates:
           type: object
           $ref: '#/components/schemas/Coordinates'
@@ -560,10 +646,10 @@ components:
         id:
           type: string
           example: 64e05bcc0517b8d356cd36f1
-        text:
+        comment:
           type: string
           example: Текст комментария
-        raiting:
+        rating:
           type: number
           minimum: 1
           maximum: 5
@@ -571,24 +657,21 @@ components:
         owner:
           type: object
           $ref: '#/components/schemas/User'
-        createdAt:
+        date:
           type: string
           example: 2023-08-10T06:06:04.950Z
 
     NewComment:
       type: object
       properties:
-        text:
+        comment:
           type: string
           example: Текст комментария
-        raiting:
+        rating:
           type: number
           minimum: 1
           maximum: 5
           example: 4
-        owner:
-          type: object
-          $ref: '#/components/schemas/User'
 
     DefaultError:
       type: object
@@ -617,6 +700,16 @@ components:
         message:
           type: string
           example: Пользователь не авторизован
+    BadRequestError:
+      type: object
+      properties:
+        code:
+          type: number
+          example: 400
+        message:
+          type: string
+          example: Неверный запрос
+
   securitySchemes:
     bearerAuth:
       type: http

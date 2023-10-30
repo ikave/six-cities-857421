@@ -13,9 +13,12 @@ import { OfferModel } from '../../modules/offer/entity/offer.entity.js';
 import OfferService from '../../modules/offer/services/offer.service.js';
 import { Offer } from '../../modules/offer/types/offer.type.js';
 import UserService from '../../modules/user/services/user.service.js';
+import { CityServiceInterface } from '../../modules/city/services/city-service.interface.js';
 import { CityService } from '../../modules/city/services/city.service.js';
 import { CityModel } from '../../modules/city/entity/city.entity.js';
-import { CityServiceInterface } from '../../modules/city/services/city-service.interface.js';
+import ConfigService from '../config/config.service.js';
+import FavoriteService from '../../modules/favorite/services/favorite.service.js';
+import { FavoriteModel } from '../../modules/favorite/entity/favorite.entity.js';
 
 const DEFAULT_DB_PORT = '27017';
 
@@ -25,6 +28,8 @@ export default class ImportCommand implements CLICommandInterface {
   private databaseService!: DatabaseClientInterface;
   private offerService!: OfferServiceInterface;
   private cityService!: CityServiceInterface;
+  private favoriteService!: FavoriteService;
+  private configService!: ConfigService;
   private logger!: LoggerInterface;
   private salt!: string;
 
@@ -33,9 +38,19 @@ export default class ImportCommand implements CLICommandInterface {
     this.onRow = this.onRow.bind(this);
 
     this.logger = new ConsoleService();
-    this.userService = new UserService(this.logger, UserModel);
+    this.configService = new ConfigService(this.logger);
+    this.userService = new UserService(
+      this.logger,
+      UserModel,
+      this.configService
+    );
+    this.favoriteService = new FavoriteService(this.logger, FavoriteModel);
     this.databaseService = new MongoClientService(this.logger);
-    this.offerService = new OfferService(this.logger, OfferModel);
+    this.offerService = new OfferService(
+      this.logger,
+      OfferModel,
+      this.favoriteService
+    );
     this.cityService = new CityService(this.logger, CityModel);
   }
 
@@ -48,15 +63,15 @@ export default class ImportCommand implements CLICommandInterface {
     const user = await this.userService.findOrCreate(
       {
         ...offer.owner,
-        password: '123141',
+        password: '123456',
       },
       this.salt
     );
 
     await this.offerService.create({
       ...offer,
-      owner: user.id,
       city: city.id,
+      owner: user.id,
     });
   }
 

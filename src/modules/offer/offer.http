@@ -1,0 +1,88 @@
+# Действия с предложениями
+
+## Получить все предложения
+
+GET http://localhost:5000/offers?cityName=Paris HTTP/1.1
+Content-Type: application/json
+
+###
+
+## Получить премиальные предложения
+
+GET http://localhost:5000/offers/premium?cityName=Amsterdam HTTP/1.1
+Content-Type: application/json
+
+###
+
+## Получить предложение по id
+
+GET http://localhost:5000/offers/652e705bba48c4377b7491ca HTTP/1.1
+Content-Type: application/json
+
+###
+
+## Обновить предложение по id
+
+PATCH http://localhost:5000/offers/652e705bba48c4377b7491ca HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjY1MmQwMmI2NjVlNDFjYzY1NWVmYzRhMSIsImlhdCI6MTY5NzU2MTU3NiwiZXhwIjoxNjk4MTY2Mzc2fQ.aokhYAwY2FboEqo8FxkkB_2ELardPNTFDHbqSWPjCUE
+
+{
+  "title": "Новый заголовок предложения",
+  "city": {
+    "name": "Paris"
+  }
+}
+
+###
+
+## Удалить предложение по id
+
+DELETE  http://localhost:5000/offers/652e62a9fdf531e4ee4b375c HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjY1MmQwMmI2NjVlNDFjYzY1NWVmYzRhMSIsImlhdCI6MTY5NzQ0ODYzOCwiZXhwIjoxNjk4MDUzNDM4fQ.lBxVplWNjbzIUnyD3PC1nHJGki9FQhqcdbqiDyh2ux4
+
+###
+
+## Создать предложение
+
+POST http://localhost:5000/offers HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjY1MmQwMmI2NjVlNDFjYzY1NWVmYzRhMSIsImlhdCI6MTY5ODMxOTEyMywiZXhwIjoxNjk4OTIzOTIzfQ.xBZghkPdZUdRIn521wzkCX1sPCWpAdr23ARh7qhT2l4
+
+{
+  "title": "Тестовое предложение об аренде №4",
+  "description": "Новый, одно подъездный дом, обеспечен пассажирским и грузопассажирским лифтами с выходом в подземный паркинг.",
+  "date": "2023-04-13T02:41:57+03:00",
+  "city": {
+    "name": "Paris"
+  },
+  "preview": "https://img2.akspic.ru/crops/2/2/8/8/98822/98822-pribrezhnyye_i_okeanicheskiye_relyefy-akva-ostrovok-karibskij_bassejn-more-1920x1080.jpg",
+  "pictures": [
+      "https://bipbap.ru/wp-content/uploads/2017/04/0_7c779_5df17311_orig.jpg",
+      "https://kartinki.cc/files/img/posts/18223/na-rabochii-stol-leto-more-9.webp",
+      "https://kartinki.cc/files/img/posts/18223/na-rabochii-stol-leto-more-18.webp",
+      "https://img1.akspic.ru/previews/1/1/8/0/70811/70811-laguna-karmannye_kompyutery-tropicheskaya_zona-otpusk-okean-x750.jpg",
+      "https://img2.akspic.ru/crops/5/2/7/8/68725/68725-otpusk-otel-plyazh-nebo-kurortnyj_gorod-4183x2430.jpg",
+      "https://img3.akspic.ru/crops/1/3/8/8/68831/68831-otpusk-plyazh-dosug-karibskij_bassejn-laguna-3202x2380.jpg"
+  ],
+  "isPremium": true,
+  "isFavorite": false,
+  "raiting": 0,
+  "houseType": "room",
+  "rooms": 3,
+  "guests": 2,
+  "price": 760,
+  "equipment": [
+      "Baby seat",
+      "Washer",
+      "Towels",
+      "Fridge"
+  ],
+  "commentsCount": 0,
+  "coordinates": {
+      "latitude": 50.938361,
+      "longitude": 6.959974
+  }
+}
+###

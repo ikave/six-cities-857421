@@ -11,8 +11,8 @@ import { Equipment } from '../offer/types/equipment.enum.js';
 import { HouseType } from '../offer/types/house-type.enum.js';
 import { User } from '../user/types/user.type.js';
 import { OfferGeneratorInterface } from './offer-generator.interface.js';
-import { City } from '../city/types/city.type.js';
 import { MockData } from '../../types/mock-data.type.js';
+import { City } from '../city/types/city.type.js';
 
 const FIRST_WEEK_DAY = 1;
 const LAST_WEEK_DAY = 7;
@@ -44,7 +44,7 @@ export class OfferGenerator implements OfferGeneratorInterface {
     const preview = getRandomItem<string>(this.mockData.preview);
     const pictures = this.mockData.pictures.join(';');
     const isPremium = getRandomBoolean();
-    const isFavorite = getRandomBoolean();
+    const isFavorite = false;
     const rating = getRandomNumber(RATING_MIN, RATING_MAX, 1);
     const houseType = getRandomItem<HouseType>(this.mockData.houseType);
     const rooms = getRandomNumber(ROOMS_MIN, ROOMS_MAX);

@@ -1,0 +1,56 @@
+# Действия с пользователем
+
+## Регистрация пользователя
+
+POST http://localhost:5000/users/register HTTP/1.1
+Content-Type: application/json
+
+{
+  "name": "Test User",
+  "email": "test3@user.cn",
+  "password": "123141",
+  "type": "pro"
+}
+
+###
+
+## Вход пользователя
+
+POST http://localhost:5000/users/login HTTP/1.1
+Content-Type: application/json
+
+{
+  "email": "test3@user.cn",
+  "password": "123141"
+}
+
+###
+
+## Проверка авторизации
+
+GET http://localhost:5000/users/profile HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjY1MmQwMmI2NjVlNDFjYzY1NWVmYzRhMSIsImlhdCI6MTY5ODQ4MjA2NSwiZXhwIjoxNjk5MDg2ODY1fQ.lXm9eKxe5s6A9UyG8wCMmIbi0vIvqQ7S8ax0zdRozjs
+
+###
+
+## Выход пользователя
+
+DELETE  http://localhost:5000/users/logout HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjY1MmQwMmI2NjVlNDFjYzY1NWVmYzRhMSIsImlhdCI6MTY5ODQ4MjA2NSwiZXhwIjoxNjk5MDg2ODY1fQ.lXm9eKxe5s6A9UyG8wCMmIbi0vIvqQ7S8ax0zdRozjs
+
+###
+
+## Обновление аватара пользователя
+
+PATCH http://localhost:5000/users/profile HTTP/1.1
+Content-Type: multipart/form-data; boundary=boundary
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjY1MmQwMmI2NjVlNDFjYzY1NWVmYzRhMSIsImlhdCI6MTY5ODIyNTMwMCwiZXhwIjoxNjk4ODMwMTAwfQ.EAadJ4R4zUy48NCvOj-x4xElNkW0dguE4AdP7dVJ-UI
+
+--boundary
+Content-Disposition: form-data; name="avatar"; filename="cat.jpg"
+Content-Type: image/jpeg
+
+< E:/cat.jpg
+--boundary--
+
+###

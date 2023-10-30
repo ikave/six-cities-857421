@@ -4,6 +4,8 @@ import { CommentServiceInterface } from '../services/comment-service.interface.j
 import { AppComponent } from '../../../types/app-component.enum.js';
 import CommentService from '../services/comment.service.js';
 import { CommentEntity, CommentModel } from '../entity/comment.entity.js';
+import { ControllerInterface } from '../../../core/controller/controller.interface.js';
+import CommentController from '../controller/comment.controller.js';
 
 export function createCommentContainer() {
   const container = new Container();
@@ -16,6 +18,10 @@ export function createCommentContainer() {
     .bind<types.ModelType<CommentEntity>>(AppComponent.CommentModel)
     .toConstantValue(CommentModel);
 
+  container
+    .bind<ControllerInterface>(AppComponent.CommentController)
+    .to(CommentController)
+    .inSingletonScope();
+
   return container;
 }
-
