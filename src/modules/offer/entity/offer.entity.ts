@@ -71,6 +71,7 @@ export class OfferEntity extends TimeStamps {
 
   @prop({
     type: Boolean,
+    default: false,
     required: true,
   })
   public isFavorite!: boolean;
@@ -78,6 +79,7 @@ export class OfferEntity extends TimeStamps {
   @prop({
     type: Number,
     required: true,
+    default: 0,
     min: 0,
     max: 5,
   })
