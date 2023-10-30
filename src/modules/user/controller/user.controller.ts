@@ -66,7 +66,7 @@ export default class UserController extends ControllerAbstract {
       middlewares: [new ValidateDtoMiddleware(LoginUserDto)],
     });
     this.addRoute({
-      path: '/login',
+      path: '/profile',
       method: HttpMethod.Get,
       handler: this.checkAuth,
       middlewares: [new UserExistsMiddleware(this.userService)],
