@@ -188,7 +188,7 @@ export const fetchUserStatus = createAsyncThunk<
   const { api } = extra;
 
   try {
-    const { data } = await api.get<User>(ApiRoute.Login);
+    const { data } = await api.get<User>(ApiRoute.Profile);
 
     return data.email;
   } catch (error) {
@@ -249,7 +249,7 @@ export const registerUser = createAsyncThunk<
       const payload = new FormData();
       payload.append('avatar', avatar);
 
-      await api.patch(`${ApiRoute.Avatar}/${data.id}`, payload, {
+      await api.patch(`${ApiRoute.Profile}/${data.id}`, payload, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
     }
