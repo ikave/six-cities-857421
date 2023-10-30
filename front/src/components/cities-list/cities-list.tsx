@@ -20,7 +20,9 @@ const CitiesList = (): JSX.Element => {
   );
 
   useEffect(() => {
-    dispatch(fetchOffers(activeCity.name));
+    if (activeCity.name) {
+      dispatch(fetchOffers(activeCity.name));
+    }
   }, [dispatch, activeCity.name]);
 
   return (

@@ -2,13 +2,13 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import type { SiteProcess } from '../../types/state';
 import type { CityName, SortName } from '../../types/types';
-import { CITIES, CityLocation, Sorting, StoreSlice } from '../../const';
+import { CityLocation, Sorting, StoreSlice } from '../../const';
 import { fetchCities } from '../action';
 
 const initialState: SiteProcess = {
   city: {
-    name: CITIES[0],
-    location: CityLocation[CITIES[0]],
+    name: '',
+    location: CityLocation[''],
   },
   cities: [],
   sorting: Sorting.Popular,
