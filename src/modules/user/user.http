@@ -28,8 +28,15 @@ Content-Type: application/json
 
 ## Проверка авторизации
 
-GET http://localhost:5000/users/login HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjY1MWQ3ZjNlM2E1NmRkNTdjMDg0MjY1OCIsImlhdCI6MTY5NjU5MzM2MCwiZXhwIjoxNjk3MTk4MTYwfQ.RRdS-RFQERHClZYcnZqbk-n-SuKdr8H9tMC6azRtmjw
+GET http://localhost:5000/users/profile HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjY1MmQwMmI2NjVlNDFjYzY1NWVmYzRhMSIsImlhdCI6MTY5ODQ4MjA2NSwiZXhwIjoxNjk5MDg2ODY1fQ.lXm9eKxe5s6A9UyG8wCMmIbi0vIvqQ7S8ax0zdRozjs
+
+###
+
+## Выход пользователя
+
+DELETE  http://localhost:5000/users/logout HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjY1MmQwMmI2NjVlNDFjYzY1NWVmYzRhMSIsImlhdCI6MTY5ODQ4MjA2NSwiZXhwIjoxNjk5MDg2ODY1fQ.lXm9eKxe5s6A9UyG8wCMmIbi0vIvqQ7S8ax0zdRozjs
 
 ###
 
