@@ -69,7 +69,7 @@ export default class OfferService implements OfferServiceInterface {
   public async find(cityId: string): Promise<DocumentType<OfferEntity>[]> {
     return await this.offerModel
       .find({ city: new ObjectId(cityId) })
-      .limit(Offer.COUNT_MAX)
+      .limit(Offer.CountMax)
       .sort({ createdAt: SortType.Down })
       .populate(['owner', 'city'])
       .exec();
@@ -80,7 +80,7 @@ export default class OfferService implements OfferServiceInterface {
   ): Promise<DocumentType<OfferEntity>[]> {
     return await this.offerModel
       .find({ city: new ObjectId(cityId), isPremium: true })
-      .limit(Offer.PREMIUM_COUNT_MAX)
+      .limit(Offer.PremiumCountMax)
       .sort({ createdAt: SortType.Down })
       .populate(['owner', 'city'])
       .exec();
